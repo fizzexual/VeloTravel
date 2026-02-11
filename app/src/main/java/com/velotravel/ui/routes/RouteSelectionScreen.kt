@@ -125,7 +125,6 @@ private fun RouteCard(
             }
             
             Spacer(modifier = Modifier.height(12.dp))
-            HorizontalDivider()
             Spacer(modifier = Modifier.height(12.dp))
             
             Text(
