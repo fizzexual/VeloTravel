@@ -98,50 +98,204 @@ class VeloRepository(
     private suspend fun checkAndUnlockAchievements(routeId: String) {
         val totalKm = dailyEntryDao.getTotalKmForRoute(routeId) ?: 0.0
         val allEntries = dailyEntryDao.getEntriesForRoute(routeId).first()
+        val allEntriesAllRoutes = dailyEntryDao.getRecentEntries().first()
         
-        // Check 10km
-        if (totalKm >= 10.0) {
-            unlockAchievement("first_10km")
+        // Distance milestones (total across all routes)
+        val totalKmAllRoutes = allEntriesAllRoutes.sumOf { it.kmRidden }
+        when {
+            totalKmAllRoutes >= 5000.0 -> unlockAchievement("five_thousand_km")
+            totalKmAllRoutes >= 2000.0 -> unlockAchievement("two_thousand_km")
+            totalKmAllRoutes >= 1000.0 -> unlockAchievement("thousand_km")
+            totalKmAllRoutes >= 500.0 -> unlockAchievement("five_hundred_km")
+            totalKmAllRoutes >= 200.0 -> unlockAchievement("two_hundred_km")
+            totalKmAllRoutes >= 100.0 -> unlockAchievement("hundred_km")
+            totalKmAllRoutes >= 50.0 -> unlockAchievement("first_50km")
+            totalKmAllRoutes >= 10.0 -> unlockAchievement("first_10km")
         }
         
-        // Check 50km
-        if (totalKm >= 50.0) {
-            unlockAchievement("first_50km")
+        // Streak achievements
+        val streakDays = calculateStreak(allEntriesAllRoutes)
+        when {
+            streakDays >= 100 -> unlockAchievement("hundred_days")
+            streakDays >= 30 -> unlockAchievement("month_streak")
+            streakDays >= 14 -> unlockAchievement("two_weeks")
+            streakDays >= 7 -> unlockAchievement("seven_days")
+            streakDays >= 3 -> unlockAchievement("three_days")
         }
         
-        // Check 100km
-        if (totalKm >= 100.0) {
-            unlockAchievement("hundred_km")
+        // Daily distance achievements
+        val todayKm = allEntriesAllRoutes
+            .filter { isToday(it.date) }
+            .sumOf { it.kmRidden }
+        when {
+            todayKm >= 100.0 -> unlockAchievement("hundred_km_day")
+            todayKm >= 50.0 -> unlockAchievement("fifty_km_day")
+            todayKm >= 42.0 -> unlockAchievement("marathon")
+            todayKm >= 20.0 -> unlockAchievement("twenty_km_day")
         }
         
-        // Check 7 days streak
-        if (hasSevenDayStreak(allEntries)) {
-            unlockAchievement("seven_days")
-        }
-        
-        // Check route completion
+        // Route completion achievements
         val progress = userProgressDao.getProgress(routeId).first()
         if (progress?.isCompleted == true) {
-            unlockAchievement("first_route")
+            val completedRoutes = getAllRoutes().count { route ->
+                val routeProgress = userProgressDao.getProgress(route.id).first()
+                routeProgress?.isCompleted == true
+            }
+            
+            when (completedRoutes) {
+                1 -> unlockAchievement("first_route")
+                3 -> unlockAchievement("three_routes")
+                5 -> unlockAchievement("five_routes")
+                10 -> unlockAchievement("ten_routes")
+            }
+            
+            if (completedRoutes == getAllRoutes().size) {
+                unlockAchievement("all_routes")
+            }
+            
+            // Check if exceeded route distance
+            if (totalKm > (getRouteById(routeId)?.totalKm ?: 0.0)) {
+                unlockAchievement("overachiever")
+            }
+        }
+        
+        // Special achievements
+        checkSpecialAchievements(allEntriesAllRoutes)
+    }
+    
+    private suspend fun checkSpecialAchievements(entries: List<DailyEntry>) {
+        // Weekend warrior
+        if (hasWeekendRides(entries)) {
+            unlockAchievement("weekend_warrior")
+        }
+        
+        // Century club (100+ km in a week)
+        if (hasWeeklyCentury(entries)) {
+            unlockAchievement("century_club")
+        }
+        
+        // Iron legs (7 days, each 20+ km)
+        if (hasIronLegsStreak(entries)) {
+            unlockAchievement("iron_legs")
+        }
+        
+        // Social rider (10+ entries with notes)
+        val entriesWithNotes = entries.count { it.notes.isNotBlank() }
+        if (entriesWithNotes >= 10) {
+            unlockAchievement("social_rider")
+        }
+        
+        // Explorer (started 5 different routes)
+        val uniqueRoutes = entries.map { it.routeId }.distinct().size
+        if (uniqueRoutes >= 5) {
+            unlockAchievement("explorer")
+        }
+        
+        // Consistent (at least once weekly for a month)
+        if (hasConsistentRiding(entries)) {
+            unlockAchievement("consistent")
+        }
+        
+        // Check total achievements unlocked
+        val unlockedCount = achievementDao.getAllAchievements().first().count { it.isUnlocked }
+        if (unlockedCount >= 30) {
+            unlockAchievement("legend")
         }
     }
     
-    private fun hasSevenDayStreak(entries: List<DailyEntry>): Boolean {
-        if (entries.size < 7) return false
+    private fun calculateStreak(entries: List<DailyEntry>): Int {
+        if (entries.isEmpty()) return 0
         
         val sortedDates = entries.map { it.date }.sorted().reversed()
         var streak = 1
+        var maxStreak = 1
         
         for (i in 0 until sortedDates.size - 1) {
             val dayDiff = (sortedDates[i] - sortedDates[i + 1]) / (1000 * 60 * 60 * 24)
             if (dayDiff <= 1) {
                 streak++
-                if (streak >= 7) return true
+                maxStreak = maxOf(maxStreak, streak)
             } else {
                 streak = 1
             }
         }
+        return maxStreak
+    }
+    
+    private fun isToday(timestamp: Long): Boolean {
+        val today = System.currentTimeMillis() / (1000 * 60 * 60 * 24)
+        val entryDay = timestamp / (1000 * 60 * 60 * 24)
+        return today == entryDay
+    }
+    
+    private fun hasWeekendRides(entries: List<DailyEntry>): Boolean {
+        val recentEntries = entries.filter { 
+            System.currentTimeMillis() - it.date < 7 * 24 * 60 * 60 * 1000 
+        }
+        val calendar = java.util.Calendar.getInstance()
+        var hasSaturday = false
+        var hasSunday = false
+        
+        recentEntries.forEach { entry ->
+            calendar.timeInMillis = entry.date
+            when (calendar.get(java.util.Calendar.DAY_OF_WEEK)) {
+                java.util.Calendar.SATURDAY -> hasSaturday = true
+                java.util.Calendar.SUNDAY -> hasSunday = true
+            }
+        }
+        return hasSaturday && hasSunday
+    }
+    
+    private fun hasWeeklyCentury(entries: List<DailyEntry>): Boolean {
+        val weekAgo = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000
+        val weeklyKm = entries.filter { it.date >= weekAgo }.sumOf { it.kmRidden }
+        return weeklyKm >= 100.0
+    }
+    
+    private fun hasIronLegsStreak(entries: List<DailyEntry>): Boolean {
+        val sortedEntries = entries.sortedByDescending { it.date }
+        var consecutiveDays = 0
+        var lastDate: Long? = null
+        
+        for (entry in sortedEntries) {
+            if (entry.kmRidden < 20.0) continue
+            
+            if (lastDate == null) {
+                consecutiveDays = 1
+                lastDate = entry.date
+            } else {
+                val dayDiff = (lastDate - entry.date) / (1000 * 60 * 60 * 24)
+                if (dayDiff <= 1) {
+                    consecutiveDays++
+                    if (consecutiveDays >= 7) return true
+                } else {
+                    consecutiveDays = 1
+                }
+                lastDate = entry.date
+            }
+        }
         return false
+    }
+    
+    private fun hasConsistentRiding(entries: List<DailyEntry>): Boolean {
+        val monthAgo = System.currentTimeMillis() - 30 * 24 * 60 * 60 * 1000
+        val recentEntries = entries.filter { it.date >= monthAgo }
+        
+        if (recentEntries.isEmpty()) return false
+        
+        val calendar = java.util.Calendar.getInstance()
+        val weeks = mutableSetOf<Int>()
+        
+        recentEntries.forEach { entry ->
+            calendar.timeInMillis = entry.date
+            weeks.add(calendar.get(java.util.Calendar.WEEK_OF_YEAR))
+        }
+        
+        return weeks.size >= 4
+    }
+    
+    private fun hasSevenDayStreak(entries: List<DailyEntry>): Boolean {
+        return calculateStreak(entries) >= 7
     }
     
     private suspend fun unlockAchievement(achievementId: String) {
