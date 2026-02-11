@@ -133,7 +133,7 @@ private fun ActiveRouteContent(
             
             // Progress bar
             LinearProgressIndicator(
-                progress = { viewModel.getProgressPercentage() },
+                progress = viewModel.getProgressPercentage(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(12.dp),
