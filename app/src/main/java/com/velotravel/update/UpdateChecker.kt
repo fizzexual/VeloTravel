@@ -24,7 +24,7 @@ class UpdateChecker(private val context: Context) {
     
     companion object {
         private const val GITHUB_API_URL = "https://api.github.com/repos/fizzexual/VeloTravel/releases/latest"
-        private const val CURRENT_VERSION = "1.1.0" // Updated with 50+ routes, bottom nav, map visualization, and update checker
+        private const val CURRENT_VERSION = "1.1.1" // Added detailed regional boundaries to Bulgaria map
     }
     
     suspend fun checkForUpdates(): UpdateInfo? = withContext(Dispatchers.IO) {
