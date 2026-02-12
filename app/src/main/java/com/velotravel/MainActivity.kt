@@ -14,10 +14,10 @@ import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -35,23 +35,89 @@ import com.velotravel.ui.home.HomeViewModel
 import com.velotravel.ui.routes.RouteSelectionScreen
 import com.velotravel.ui.routes.RouteSelectionViewModel
 import com.velotravel.ui.theme.VeloTravelTheme
+import com.velotravel.ui.update.CheckingUpdateDialog
+import com.velotravel.ui.update.NoUpdateDialog
+import com.velotravel.ui.update.UpdateAvailableDialog
+import com.velotravel.update.UpdateChecker
+import com.velotravel.update.UpdateInfo
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private lateinit var updateChecker: UpdateChecker
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         val app = application as VeloTravelApp
         val repository = app.repository
+        updateChecker = UpdateChecker(this)
         
         setContent {
             VeloTravelTheme {
+                var updateInfo by remember { mutableStateOf<UpdateInfo?>(null) }
+                var showUpdateDialog by remember { mutableStateOf(false) }
+                var showCheckingDialog by remember { mutableStateOf(false) }
+                var showNoUpdateDialog by remember { mutableStateOf(false) }
+                
+                // Check for updates on app start
+                LaunchedEffect(Unit) {
+                    lifecycleScope.launch {
+                        showCheckingDialog = true
+                        val update = updateChecker.checkForUpdates()
+                        showCheckingDialog = false
+                        
+                        if (update != null) {
+                            updateInfo = update
+                            showUpdateDialog = true
+                        }
+                    }
+                }
+                
                 VeloTravelNavigation(
                     homeViewModel = HomeViewModel(repository),
                     currentRouteViewModel = CurrentRouteViewModel(repository),
                     routeSelectionViewModel = RouteSelectionViewModel(repository),
                     historyViewModel = HistoryViewModel(repository),
-                    achievementsViewModel = AchievementsViewModel(repository)
+                    achievementsViewModel = AchievementsViewModel(repository),
+                    onCheckForUpdates = {
+                        lifecycleScope.launch {
+                            showCheckingDialog = true
+                            val update = updateChecker.checkForUpdates()
+                            showCheckingDialog = false
+                            
+                            if (update != null) {
+                                updateInfo = update
+                                showUpdateDialog = true
+                            } else {
+                                showNoUpdateDialog = true
+                            }
+                        }
+                    }
                 )
+                
+                // Update dialogs
+                if (showCheckingDialog) {
+                    CheckingUpdateDialog(
+                        onDismiss = { showCheckingDialog = false }
+                    )
+                }
+                
+                if (showUpdateDialog && updateInfo != null) {
+                    UpdateAvailableDialog(
+                        updateInfo = updateInfo!!,
+                        onDownload = {
+                            updateChecker.downloadAndInstallUpdate(updateInfo!!)
+                            showUpdateDialog = false
+                        },
+                        onDismiss = { showUpdateDialog = false }
+                    )
+                }
+                
+                if (showNoUpdateDialog) {
+                    NoUpdateDialog(
+                        onDismiss = { showNoUpdateDialog = false }
+                    )
+                }
             }
         }
     }
@@ -75,7 +141,8 @@ fun VeloTravelNavigation(
     currentRouteViewModel: CurrentRouteViewModel,
     routeSelectionViewModel: RouteSelectionViewModel,
     historyViewModel: HistoryViewModel,
-    achievementsViewModel: AchievementsViewModel
+    achievementsViewModel: AchievementsViewModel,
+    onCheckForUpdates: () -> Unit
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()

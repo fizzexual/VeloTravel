@@ -3,12 +3,22 @@
 ## Концепция
 Приложение за велоергометър, което превръща тренировките в виртуално пътуване из България.
 
+## Версия 1.1.0
+
+### Нови функции:
+- ✅ 50+ маршрута из цяла България (кратки 4-15км, средни, дълги)
+- ✅ 4-таб навигация (Начало, Текущ, Маршрути, Постижения)
+- ✅ Визуална карта на България с региони
+- ✅ Автоматична проверка за актуализации от GitHub
+- ✅ Изтегляне и инсталиране на нови версии директно от приложението
+
 ## Архитектура
 
 ### Слоеве:
 1. **UI Layer** (Jetpack Compose)
-   - Екрани: Home, Route Selection, Progress, History, Achievements
+   - Екрани: Home, Current Route, Route Selection, History, Achievements
    - ViewModels за всеки екран
+   - Bottom Navigation Bar
 
 2. **Domain Layer**
    - Use Cases: AddDailyKm, GetProgress, CheckAchievements
@@ -17,7 +27,7 @@
 3. **Data Layer**
    - Repository pattern
    - Room Database за локално съхранение
-   - DataStore за настройки
+   - UpdateChecker за GitHub интеграция
 
 ### Технологии:
 - Kotlin
@@ -25,18 +35,19 @@
 - Room Database
 - Kotlin Coroutines & Flow
 - Material 3 (Dark Theme)
+- GitHub API за актуализации
 
 ## Основни екрани:
 
 1. **Home Screen** - Текущ напредък, бърз вход на км
-2. **Route Selection** - Избор на маршрут
-3. **Progress Screen** - Визуална карта с етапи
+2. **Current Route Screen** - Визуална карта с велосипедист и напредък
+3. **Route Selection** - Избор от 50+ маршрута
 4. **History Screen** - Дневна история
 5. **Achievements Screen** - Постижения
 
-## Как да компилираш без Android Studio:
+## Как да компилираш:
 
-### Вариант 1: Gradle от командна линия
+### Gradle от командна линия
 ```bash
 # Windows
 gradlew.bat assembleDebug
@@ -47,32 +58,44 @@ gradlew.bat assembleDebug
 
 APK файлът ще е в: `app/build/outputs/apk/debug/app-debug.apk`
 
-### Вариант 2: Online Build
-- Качи проекта в GitHub
-- Използвай GitHub Actions за автоматичен build
-- Или използвай AppCenter / Bitrise
-
 ### Инсталация на устройство:
 ```bash
-adb install app-debug.apk
+adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## Добавяне на нови маршрути:
+## GitHub Actions Release
 
-Редактирай `app/src/main/java/com/velotravel/data/Routes.kt`:
+За да създадеш нова версия:
 
-```kotlin
-Route(
-    id = "sofia-ruse",
-    name = "София → Русе",
-    startCity = "София",
-    endCity = "Русе",
-    totalKm = 320.0,
-    milestones = listOf(
-        Milestone(0.0, "София"),
-        Milestone(80.0, "Плевен"),
-        Milestone(160.0, "Бяла"),
-        Milestone(320.0, "Русе")
-    )
-)
+```bash
+# Промени версията в UpdateChecker.kt
+# Commit промените
+git add .
+git commit -m "Version 1.2.0"
+
+# Създай tag
+git tag v1.2.0
+
+# Push tag
+git push origin v1.2.0
 ```
+
+GitHub Actions автоматично ще:
+1. Компилира APK
+2. Създаде Release
+3. Качи APK файла
+
+Всички потребители ще получат известие за актуализация при стартиране на приложението.
+
+## Маршрути
+
+Приложението включва 50+ маршрута:
+- **Кратки (4-15 км)**: Перфектни за начинаещи
+- **Средни (20-50 км)**: Средно ниво
+- **Дълги (60-150 км)**: Напреднали
+- **Много дълги (200+ км)**: Експертно ниво
+
+Всички маршрути покриват реални градове и забележителности в България.
+
+## Лиценз
+MIT License

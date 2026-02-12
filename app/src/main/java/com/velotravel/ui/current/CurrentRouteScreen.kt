@@ -57,94 +57,127 @@ class CurrentRouteViewModel(
 data class CityCoordinate(
     val name: String,
     val x: Float,  // Normalized 0-1 (west to east)
-    val y: Float   // Normalized 0-1 (north to south)
+    val y: Float,  // Normalized 0-1 (north to south)
+    val region: String
 )
 
-// Approximate Bulgarian city coordinates (normalized)
+// Bulgarian regions (oblasti)
+enum class BulgarianRegion(val displayName: String) {
+    BLAGOEVGRAD("Благоевград"),
+    BURGAS("Бургас"),
+    VARNA("Варна"),
+    VELIKO_TARNOVO("Велико Търново"),
+    VIDIN("Видин"),
+    VRATSA("Враца"),
+    GABROVO("Габрово"),
+    DOBRICH("Добрич"),
+    KARDZHALI("Кърджали"),
+    KYUSTENDIL("Кюстендил"),
+    LOVECH("Ловеч"),
+    MONTANA("Монтана"),
+    PAZARDZHIK("Пазарджик"),
+    PERNIK("Перник"),
+    PLEVEN("Плевен"),
+    PLOVDIV("Пловдив"),
+    RAZGRAD("Разград"),
+    RUSE("Русе"),
+    SILISTRA("Силистра"),
+    SLIVEN("Сливен"),
+    SMOLYAN("Смолян"),
+    SOFIA_CITY("София-град"),
+    SOFIA("София"),
+    STARA_ZAGORA("Стара Загора"),
+    TARGOVISHTE("Търговище"),
+    HASKOVO("Хасково"),
+    SHUMEN("Шумен"),
+    YAMBOL("Ямбол")
+}
+
+// Bulgarian city coordinates with regions
 val bulgarianCities = mapOf(
-    "София" to CityCoordinate("София", 0.35f, 0.55f),
-    "София Център" to CityCoordinate("София Център", 0.35f, 0.55f),
-    "Пловдив" to CityCoordinate("Пловдив", 0.50f, 0.60f),
-    "Варна" to CityCoordinate("Варна", 0.85f, 0.25f),
-    "Бургас" to CityCoordinate("Бургас", 0.82f, 0.65f),
-    "Русе" to CityCoordinate("Русе", 0.70f, 0.10f),
-    "Велико Търново" to CityCoordinate("Велико Търново", 0.60f, 0.30f),
-    "В. Търново" to CityCoordinate("В. Търново", 0.60f, 0.30f),
-    "Стара Загора" to CityCoordinate("Стара Загора", 0.62f, 0.58f),
-    "Плевен" to CityCoordinate("Плевен", 0.50f, 0.25f),
-    "Сливен" to CityCoordinate("Сливен", 0.70f, 0.60f),
-    "Добрич" to CityCoordinate("Добрич", 0.82f, 0.18f),
-    "Шумен" to CityCoordinate("Шумен", 0.75f, 0.28f),
-    "Перник" to CityCoordinate("Перник", 0.32f, 0.58f),
-    "Хасково" to CityCoordinate("Хасково", 0.60f, 0.75f),
-    "Пазарджик" to CityCoordinate("Пазарджик", 0.42f, 0.60f),
-    "Ямбол" to CityCoordinate("Ямбол", 0.72f, 0.68f),
-    "Благоевград" to CityCoordinate("Благоевград", 0.25f, 0.70f),
-    "Враца" to CityCoordinate("Враца", 0.38f, 0.28f),
-    "Габрово" to CityCoordinate("Габрово", 0.55f, 0.38f),
-    "Асеновград" to CityCoordinate("Асеновград", 0.50f, 0.65f),
-    "Видин" to CityCoordinate("Видин", 0.15f, 0.22f),
-    "Казанлък" to CityCoordinate("Казанлък", 0.58f, 0.52f),
-    "Кюстендил" to CityCoordinate("Кюстендил", 0.28f, 0.62f),
-    "Кърджали" to CityCoordinate("Кърджали", 0.58f, 0.80f),
-    "Монтана" to CityCoordinate("Монтана", 0.32f, 0.25f),
-    "Търговище" to CityCoordinate("Търговище", 0.68f, 0.28f),
-    "Силистра" to CityCoordinate("Силистра", 0.82f, 0.08f),
-    "Смолян" to CityCoordinate("Смолян", 0.48f, 0.78f),
-    "Банско" to CityCoordinate("Банско", 0.28f, 0.72f),
-    "Златни пясъци" to CityCoordinate("Златни пясъци", 0.86f, 0.22f),
-    "Созопол" to CityCoordinate("Созопол", 0.82f, 0.70f),
-    "Несебър" to CityCoordinate("Несебър", 0.84f, 0.63f),
-    "Балчик" to CityCoordinate("Балчик", 0.88f, 0.18f),
-    "Копривщица" to CityCoordinate("Копривщица", 0.45f, 0.52f),
-    "Мелник" to CityCoordinate("Мелник", 0.22f, 0.73f),
-    "Белоградчик" to CityCoordinate("Белоградчик", 0.28f, 0.22f),
-    "Трявна" to CityCoordinate("Трявна", 0.56f, 0.38f),
-    "Бояна" to CityCoordinate("Бояна", 0.34f, 0.57f),
-    "Драгалевци" to CityCoordinate("Драгалевци", 0.35f, 0.58f),
-    "Арбанаси" to CityCoordinate("Арбанаси", 0.60f, 0.28f),
-    "Добринище" to CityCoordinate("Добринище", 0.27f, 0.73f),
-    "Шипка" to CityCoordinate("Шипка", 0.58f, 0.48f),
-    "Роженски манастир" to CityCoordinate("Роженски манастир", 0.22f, 0.74f),
-    "Слънчев бряг" to CityCoordinate("Слънчев бряг", 0.84f, 0.62f),
-    "Каварна" to CityCoordinate("Каварна", 0.90f, 0.16f),
-    "Пампорово" to CityCoordinate("Пампорово", 0.48f, 0.76f),
-    "Сандански" to CityCoordinate("Сандански", 0.24f, 0.72f),
-    "Димитровград" to CityCoordinate("Димитровград", 0.58f, 0.68f),
-    "Елхово" to CityCoordinate("Елхово", 0.75f, 0.70f),
-    "Дупница" to CityCoordinate("Дупница", 0.30f, 0.60f),
-    "Самоков" to CityCoordinate("Самоков", 0.38f, 0.58f),
-    "Бачково" to CityCoordinate("Бачково", 0.50f, 0.68f),
-    "Приморско" to CityCoordinate("Приморско", 0.80f, 0.72f),
-    "Разлог" to CityCoordinate("Разлог", 0.27f, 0.72f),
-    "Лом" to CityCoordinate("Лом", 0.22f, 0.20f),
-    "Ихтиман" to CityCoordinate("Ихтиман", 0.40f, 0.57f),
-    "Нови Искър" to CityCoordinate("Нови Искър", 0.37f, 0.54f),
-    "Иваново" to CityCoordinate("Иваново", 0.72f, 0.08f),
-    "Малко Търново" to CityCoordinate("Малко Търново", 0.78f, 0.75f),
-    "Царево" to CityCoordinate("Царево", 0.80f, 0.74f),
-    "Китен" to CityCoordinate("Китен", 0.81f, 0.71f),
-    "Дряново" to CityCoordinate("Дряново", 0.57f, 0.34f),
-    "Боснек" to CityCoordinate("Боснек", 0.32f, 0.58f),
-    "Гурково" to CityCoordinate("Гурково", 0.60f, 0.55f),
-    "Тутракан" to CityCoordinate("Тутракан", 0.76f, 0.09f),
-    "Бяла" to CityCoordinate("Бяла", 0.62f, 0.18f),
-    "Бяла Черква" to CityCoordinate("Бяла Черква", 0.66f, 0.14f),
-    "Девня" to CityCoordinate("Девня", 0.83f, 0.27f),
-    "Албена" to CityCoordinate("Албена", 0.87f, 0.20f),
-    "Обзор" to CityCoordinate("Обзор", 0.84f, 0.50f),
-    "Разград" to CityCoordinate("Разград", 0.68f, 0.22f),
-    "Карнобат" to CityCoordinate("Карнобат", 0.75f, 0.64f),
-    "Ябланица" to CityCoordinate("Ябланица", 0.45f, 0.40f),
-    "Севлиево" to CityCoordinate("Севлиево", 0.56f, 0.35f),
-    "Карлово" to CityCoordinate("Карлово", 0.50f, 0.52f),
-    "Калофер" to CityCoordinate("Калофер", 0.52f, 0.52f),
-    "Мездра" to CityCoordinate("Мездра", 0.40f, 0.32f),
-    "Антон" to CityCoordinate("Антон", 0.43f, 0.54f),
-    "Чепеларе" to CityCoordinate("Чепеларе", 0.49f, 0.74f),
-    "Околности" to CityCoordinate("Околности", 0.46f, 0.53f),
-    "Скалите" to CityCoordinate("Скалите", 0.29f, 0.23f),
-    "Копривщица Център" to CityCoordinate("Копривщица Център", 0.45f, 0.52f)
+    "София" to CityCoordinate("София", 0.35f, 0.55f, "София-град"),
+    "София Център" to CityCoordinate("София Център", 0.35f, 0.55f, "София-град"),
+    "Пловдив" to CityCoordinate("Пловдив", 0.50f, 0.60f, "Пловдив"),
+    "Варна" to CityCoordinate("Варна", 0.85f, 0.25f, "Варна"),
+    "Бургас" to CityCoordinate("Бургас", 0.82f, 0.65f, "Бургас"),
+    "Русе" to CityCoordinate("Русе", 0.70f, 0.10f, "Русе"),
+    "Велико Търново" to CityCoordinate("Велико Търново", 0.60f, 0.30f, "Велико Търново"),
+    "В. Търново" to CityCoordinate("В. Търново", 0.60f, 0.30f, "Велико Търново"),
+    "Стара Загора" to CityCoordinate("Стара Загора", 0.62f, 0.58f, "Стара Загора"),
+    "Плевен" to CityCoordinate("Плевен", 0.50f, 0.25f, "Плевен"),
+    "Сливен" to CityCoordinate("Сливен", 0.70f, 0.60f, "Сливен"),
+    "Добрич" to CityCoordinate("Добрич", 0.82f, 0.18f, "Добрич"),
+    "Шумен" to CityCoordinate("Шумен", 0.75f, 0.28f, "Шумен"),
+    "Перник" to CityCoordinate("Перник", 0.32f, 0.58f, "Перник"),
+    "Хасково" to CityCoordinate("Хасково", 0.60f, 0.75f, "Хасково"),
+    "Пазарджик" to CityCoordinate("Пазарджик", 0.42f, 0.60f, "Пазарджик"),
+    "Ямбол" to CityCoordinate("Ямбол", 0.72f, 0.68f, "Ямбол"),
+    "Благоевград" to CityCoordinate("Благоевград", 0.25f, 0.70f, "Благоевград"),
+    "Враца" to CityCoordinate("Враца", 0.38f, 0.28f, "Враца"),
+    "Габрово" to CityCoordinate("Габрово", 0.55f, 0.38f, "Габрово"),
+    "Асеновград" to CityCoordinate("Асеновград", 0.50f, 0.65f, "Пловдив"),
+    "Видин" to CityCoordinate("Видин", 0.15f, 0.22f, "Видин"),
+    "Казанлък" to CityCoordinate("Казанлък", 0.58f, 0.52f, "Стара Загора"),
+    "Кюстендил" to CityCoordinate("Кюстендил", 0.28f, 0.62f, "Кюстендил"),
+    "Кърджали" to CityCoordinate("Кърджали", 0.58f, 0.80f, "Кърджали"),
+    "Монтана" to CityCoordinate("Монтана", 0.32f, 0.25f, "Монтана"),
+    "Търговище" to CityCoordinate("Търговище", 0.68f, 0.28f, "Търговище"),
+    "Силистра" to CityCoordinate("Силистра", 0.82f, 0.08f, "Силистра"),
+    "Смолян" to CityCoordinate("Смолян", 0.48f, 0.78f, "Смолян"),
+    "Банско" to CityCoordinate("Банско", 0.28f, 0.72f, "Благоевград"),
+    "Златни пясъци" to CityCoordinate("Златни пясъци", 0.86f, 0.22f, "Варна"),
+    "Созопол" to CityCoordinate("Созопол", 0.82f, 0.70f, "Бургас"),
+    "Несебър" to CityCoordinate("Несебър", 0.84f, 0.63f, "Бургас"),
+    "Балчик" to CityCoordinate("Балчик", 0.88f, 0.18f, "Добрич"),
+    "Копривщица" to CityCoordinate("Копривщица", 0.45f, 0.52f, "София"),
+    "Мелник" to CityCoordinate("Мелник", 0.22f, 0.73f, "Благоевград"),
+    "Белоградчик" to CityCoordinate("Белоградчик", 0.28f, 0.22f, "Видин"),
+    "Трявна" to CityCoordinate("Трявна", 0.56f, 0.38f, "Габрово"),
+    "Бояна" to CityCoordinate("Бояна", 0.34f, 0.57f, "София-град"),
+    "Драгалевци" to CityCoordinate("Драгалевци", 0.35f, 0.58f, "София-град"),
+    "Арбанаси" to CityCoordinate("Арбанаси", 0.60f, 0.28f, "Велико Търново"),
+    "Добринище" to CityCoordinate("Добринище", 0.27f, 0.73f, "Благоевград"),
+    "Шипка" to CityCoordinate("Шипка", 0.58f, 0.48f, "Стара Загора"),
+    "Роженски манастир" to CityCoordinate("Роженски манастир", 0.22f, 0.74f, "Благоевград"),
+    "Слънчев бряг" to CityCoordinate("Слънчев бряг", 0.84f, 0.62f, "Бургас"),
+    "Каварна" to CityCoordinate("Каварна", 0.90f, 0.16f, "Добрич"),
+    "Пампорово" to CityCoordinate("Пампорово", 0.48f, 0.76f, "Смолян"),
+    "Сандански" to CityCoordinate("Сандански", 0.24f, 0.72f, "Благоевград"),
+    "Димитровград" to CityCoordinate("Димитровград", 0.58f, 0.68f, "Хасково"),
+    "Елхово" to CityCoordinate("Елхово", 0.75f, 0.70f, "Ямбол"),
+    "Дупница" to CityCoordinate("Дупница", 0.30f, 0.60f, "Кюстендил"),
+    "Самоков" to CityCoordinate("Самоков", 0.38f, 0.58f, "София"),
+    "Бачково" to CityCoordinate("Бачково", 0.50f, 0.68f, "Пловдив"),
+    "Приморско" to CityCoordinate("Приморско", 0.80f, 0.72f, "Бургас"),
+    "Разлог" to CityCoordinate("Разлог", 0.27f, 0.72f, "Благоевград"),
+    "Лом" to CityCoordinate("Лом", 0.22f, 0.20f, "Монтана"),
+    "Ихтиман" to CityCoordinate("Ихтиман", 0.40f, 0.57f, "София"),
+    "Нови Искър" to CityCoordinate("Нови Искър", 0.37f, 0.54f, "София"),
+    "Иваново" to CityCoordinate("Иваново", 0.72f, 0.08f, "Русе"),
+    "Малко Търново" to CityCoordinate("Малко Търново", 0.78f, 0.75f, "Бургас"),
+    "Царево" to CityCoordinate("Царево", 0.80f, 0.74f, "Бургас"),
+    "Китен" to CityCoordinate("Китен", 0.81f, 0.71f, "Бургас"),
+    "Дряново" to CityCoordinate("Дряново", 0.57f, 0.34f, "Габрово"),
+    "Боснек" to CityCoordinate("Боснек", 0.32f, 0.58f, "Перник"),
+    "Гурково" to CityCoordinate("Гурково", 0.60f, 0.55f, "Стара Загора"),
+    "Тутракан" to CityCoordinate("Тутракан", 0.76f, 0.09f, "Силистра"),
+    "Бяла" to CityCoordinate("Бяла", 0.62f, 0.18f, "Русе"),
+    "Бяла Черква" to CityCoordinate("Бяла Черква", 0.66f, 0.14f, "Русе"),
+    "Девня" to CityCoordinate("Девня", 0.83f, 0.27f, "Варна"),
+    "Албена" to CityCoordinate("Албена", 0.87f, 0.20f, "Добрич"),
+    "Обзор" to CityCoordinate("Обзор", 0.84f, 0.50f, "Бургас"),
+    "Разград" to CityCoordinate("Разград", 0.68f, 0.22f, "Разград"),
+    "Карнобат" to CityCoordinate("Карнобат", 0.75f, 0.64f, "Бургас"),
+    "Ябланица" to CityCoordinate("Ябланица", 0.45f, 0.40f, "Ловеч"),
+    "Севлиево" to CityCoordinate("Севлиево", 0.56f, 0.35f, "Габрово"),
+    "Карлово" to CityCoordinate("Карлово", 0.50f, 0.52f, "Пловдив"),
+    "Калофер" to CityCoordinate("Калофер", 0.52f, 0.52f, "Пловдив"),
+    "Мездра" to CityCoordinate("Мездра", 0.40f, 0.32f, "Враца"),
+    "Антон" to CityCoordinate("Антон", 0.43f, 0.54f, "София"),
+    "Чепеларе" to CityCoordinate("Чепеларе", 0.49f, 0.74f, "Смолян"),
+    "Околности" to CityCoordinate("Околности", 0.46f, 0.53f, "София"),
+    "Скалите" to CityCoordinate("Скалите", 0.29f, 0.23f, "Видин"),
+    "Копривщица Център" to CityCoordinate("Копривщица Център", 0.45f, 0.52f, "София")
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -349,6 +382,17 @@ fun BulgarianMapVisualization(
     val secondaryColor = MaterialTheme.colorScheme.secondary
     val tertiaryColor = MaterialTheme.colorScheme.tertiary
     val surfaceColor = MaterialTheme.colorScheme.surface
+    val outlineColor = MaterialTheme.colorScheme.outline
+    
+    // Get start and end coordinates
+    val startCity = route.milestones.firstOrNull()?.cityName
+    val endCity = route.milestones.lastOrNull()?.cityName
+    
+    val startCoord = startCity?.let { bulgarianCities[it] }
+    val endCoord = endCity?.let { bulgarianCities[it] }
+    
+    // Check if same region
+    val sameRegion = startCoord?.region == endCoord?.region
     
     Card(
         modifier = modifier,
@@ -358,141 +402,206 @@ fun BulgarianMapVisualization(
             modifier = Modifier
                 .fillMaxSize()
                 .background(surfaceColor)
-                .padding(24.dp)
+                .padding(16.dp)
         ) {
             val width = size.width
             val height = size.height
             
-            // Draw Bulgaria outline (simplified)
-            val bulgariaPath = Path().apply {
-                // Simplified Bulgaria border
-                moveTo(width * 0.15f, height * 0.25f)
-                lineTo(width * 0.25f, height * 0.15f)
-                lineTo(width * 0.50f, height * 0.08f)
-                lineTo(width * 0.75f, height * 0.08f)
-                lineTo(width * 0.90f, height * 0.15f)
-                lineTo(width * 0.92f, height * 0.30f)
-                lineTo(width * 0.88f, height * 0.50f)
-                lineTo(width * 0.85f, height * 0.70f)
-                lineTo(width * 0.78f, height * 0.78f)
-                lineTo(width * 0.60f, height * 0.82f)
-                lineTo(width * 0.40f, height * 0.78f)
-                lineTo(width * 0.25f, height * 0.72f)
-                lineTo(width * 0.20f, height * 0.60f)
-                lineTo(width * 0.18f, height * 0.40f)
-                close()
-            }
+            // Draw detailed Bulgaria outline with regions
+            drawBulgariaWithRegions(width, height, outlineColor)
             
-            drawPath(
-                path = bulgariaPath,
-                color = Color.LightGray.copy(alpha = 0.3f),
-                style = Stroke(width = 2f)
-            )
-            
-            // Get route coordinates
-            val routeCoordinates = route.milestones.mapNotNull { milestone ->
-                bulgarianCities[milestone.cityName]?.let { coord ->
-                    Pair(milestone, coord)
-                }
-            }
-            
-            if (routeCoordinates.isNotEmpty()) {
-                // Draw route path
-                val routePath = Path()
-                routeCoordinates.forEachIndexed { index, (_, coord) ->
-                    val x = width * coord.x
-                    val y = height * coord.y
-                    
-                    if (index == 0) {
-                        routePath.moveTo(x, y)
-                    } else {
-                        routePath.lineTo(x, y)
-                    }
-                }
+            // Draw route line if coordinates exist
+            if (startCoord != null && endCoord != null) {
+                val startX = width * startCoord.x
+                val startY = height * startCoord.y
+                val endX = width * endCoord.x
+                val endY = height * endCoord.y
                 
-                // Draw completed path
-                val completedPercent = (progressKm / route.totalKm).toFloat()
-                drawPath(
-                    path = routePath,
-                    color = tertiaryColor.copy(alpha = 0.4f),
-                    style = Stroke(
-                        width = 6f,
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f))
-                    )
+                // Draw route line
+                drawLine(
+                    color = primaryColor,
+                    start = Offset(startX, startY),
+                    end = Offset(endX, endY),
+                    strokeWidth = 8f,
+                    cap = StrokeCap.Round
                 )
                 
-                // Draw cities and markers
-                routeCoordinates.forEachIndexed { index, (milestone, coord) ->
-                    val x = width * coord.x
-                    val y = height * coord.y
-                    val isPassed = progressKm >= milestone.kmFromStart
-                    val isStart = index == 0
-                    val isEnd = index == routeCoordinates.lastIndex
-                    
-                    // Draw city circle
-                    drawCircle(
-                        color = when {
-                            isStart -> secondaryColor
-                            isEnd -> primaryColor
-                            isPassed -> tertiaryColor
-                            else -> Color.Gray
-                        },
-                        radius = if (isStart || isEnd) 12f else 8f,
-                        center = Offset(x, y)
-                    )
-                    
-                    // Draw city name
-                    drawCircle(
-                        color = Color.White,
-                        radius = if (isStart || isEnd) 10f else 6f,
-                        center = Offset(x, y)
-                    )
-                }
+                // Draw progress line
+                val progressPercent = (progressKm / route.totalKm).toFloat().coerceIn(0f, 1f)
+                val currentX = startX + (endX - startX) * progressPercent
+                val currentY = startY + (endY - startY) * progressPercent
                 
-                // Draw current position (biker)
-                val currentMilestoneIndex = route.milestones.indexOfLast { it.kmFromStart <= progressKm }
-                if (currentMilestoneIndex >= 0 && currentMilestoneIndex < routeCoordinates.size - 1) {
-                    val currentMilestone = routeCoordinates[currentMilestoneIndex]
-                    val nextMilestone = routeCoordinates[currentMilestoneIndex + 1]
-                    
-                    val segmentStart = route.milestones[currentMilestoneIndex].kmFromStart
-                    val segmentEnd = route.milestones[currentMilestoneIndex + 1].kmFromStart
-                    val segmentProgress = ((progressKm - segmentStart) / (segmentEnd - segmentStart)).toFloat()
-                    
-                    val bikerX = currentMilestone.second.x + (nextMilestone.second.x - currentMilestone.second.x) * segmentProgress
-                    val bikerY = currentMilestone.second.y + (nextMilestone.second.y - currentMilestone.second.y) * segmentProgress
-                    
-                    // Draw biker icon (simplified)
-                    val bikerCenterX = width * bikerX
-                    val bikerCenterY = height * bikerY
-                    
-                    // Biker body
-                    drawCircle(
-                        color = primaryColor,
-                        radius = 16f,
-                        center = Offset(bikerCenterX, bikerCenterY)
-                    )
-                    
-                    // Biker head
-                    drawCircle(
-                        color = Color.White,
-                        radius = 6f,
-                        center = Offset(bikerCenterX, bikerCenterY - 8f)
-                    )
-                    
-                    // Biker wheels (simplified)
-                    drawCircle(
-                        color = Color.White,
-                        radius = 4f,
-                        center = Offset(bikerCenterX - 8f, bikerCenterY + 8f)
-                    )
-                    drawCircle(
-                        color = Color.White,
-                        radius = 4f,
-                        center = Offset(bikerCenterX + 8f, bikerCenterY + 8f)
-                    )
-                }
+                drawLine(
+                    color = tertiaryColor,
+                    start = Offset(startX, startY),
+                    end = Offset(currentX, currentY),
+                    strokeWidth = 8f,
+                    cap = StrokeCap.Round
+                )
+                
+                // Draw start marker
+                drawCircle(
+                    color = secondaryColor,
+                    radius = 16f,
+                    center = Offset(startX, startY)
+                )
+                drawCircle(
+                    color = Color.White,
+                    radius = 12f,
+                    center = Offset(startX, startY)
+                )
+                
+                // Draw end marker
+                drawCircle(
+                    color = primaryColor,
+                    radius = 16f,
+                    center = Offset(endX, endY)
+                )
+                drawCircle(
+                    color = Color.White,
+                    radius = 12f,
+                    center = Offset(endX, endY)
+                )
+                
+                // Draw biker at current position
+                drawCircle(
+                    color = tertiaryColor,
+                    radius = 20f,
+                    center = Offset(currentX, currentY)
+                )
+                
+                // Biker icon (simplified bicycle)
+                drawCircle(
+                    color = Color.White,
+                    radius = 8f,
+                    center = Offset(currentX, currentY - 6f)
+                )
+                
+                // Wheels
+                drawCircle(
+                    color = Color.White,
+                    radius = 5f,
+                    center = Offset(currentX - 10f, currentY + 10f),
+                    style = Stroke(width = 2f)
+                )
+                drawCircle(
+                    color = Color.White,
+                    radius = 5f,
+                    center = Offset(currentX + 10f, currentY + 10f),
+                    style = Stroke(width = 2f)
+                )
             }
         }
     }
+}
+
+fun androidx.compose.ui.graphics.drawscope.DrawScope.drawBulgariaWithRegions(
+    width: Float,
+    height: Float,
+    color: Color
+) {
+    // Detailed Bulgaria outline with all 28 regions
+    // Northwest - Vidin region
+    val bulgariaPath = Path().apply {
+        moveTo(width * 0.15f, height * 0.22f) // Vidin
+        
+        // North border (Danube river)
+        lineTo(width * 0.22f, height * 0.18f) // Montana
+        lineTo(width * 0.32f, height * 0.20f) // Vratsa
+        lineTo(width * 0.42f, height * 0.18f) // Pleven
+        lineTo(width * 0.52f, height * 0.15f) // Lovech
+        lineTo(width * 0.62f, height * 0.12f) // Veliko Tarnovo
+        lineTo(width * 0.70f, height * 0.08f) // Ruse
+        lineTo(width * 0.78f, height * 0.06f) // Razgrad
+        lineTo(width * 0.84f, height * 0.08f) // Silistra
+        
+        // Northeast corner
+        lineTo(width * 0.88f, height * 0.12f) // Dobrich
+        lineTo(width * 0.92f, height * 0.18f)
+        
+        // East coast (Black Sea)
+        lineTo(width * 0.90f, height * 0.24f) // Varna north
+        lineTo(width * 0.88f, height * 0.32f)
+        lineTo(width * 0.86f, height * 0.42f)
+        lineTo(width * 0.85f, height * 0.52f)
+        lineTo(width * 0.84f, height * 0.60f) // Burgas north
+        lineTo(width * 0.83f, height * 0.68f)
+        lineTo(width * 0.80f, height * 0.74f) // Burgas south
+        
+        // Southeast border
+        lineTo(width * 0.75f, height * 0.76f)
+        lineTo(width * 0.68f, height * 0.78f) // Yambol
+        lineTo(width * 0.62f, height * 0.80f) // Haskovo
+        lineTo(width * 0.56f, height * 0.82f) // Kardzhali
+        lineTo(width * 0.50f, height * 0.80f) // Smolyan
+        
+        // South border
+        lineTo(width * 0.44f, height * 0.76f) // Plovdiv south
+        lineTo(width * 0.38f, height * 0.74f) // Pazardzhik
+        lineTo(width * 0.32f, height * 0.72f) // Blagoevgrad
+        lineTo(width * 0.26f, height * 0.68f)
+        lineTo(width * 0.22f, height * 0.64f) // Kyustendil
+        
+        // West border
+        lineTo(width * 0.20f, height * 0.58f) // Pernik
+        lineTo(width * 0.22f, height * 0.52f) // Sofia region
+        lineTo(width * 0.24f, height * 0.46f)
+        lineTo(width * 0.22f, height * 0.38f) // Vratsa
+        lineTo(width * 0.18f, height * 0.30f) // Montana
+        lineTo(width * 0.15f, height * 0.22f) // Back to Vidin
+        
+        close()
+    }
+    
+    // Draw main outline
+    drawPath(
+        path = bulgariaPath,
+        color = color,
+        style = Stroke(width = 3f)
+    )
+    
+    // Draw internal region borders (simplified)
+    // Horizontal divisions
+    drawLine(
+        color = color.copy(alpha = 0.3f),
+        start = Offset(width * 0.20f, height * 0.35f),
+        end = Offset(width * 0.85f, height * 0.35f),
+        strokeWidth = 1f
+    )
+    
+    drawLine(
+        color = color.copy(alpha = 0.3f),
+        start = Offset(width * 0.25f, height * 0.55f),
+        end = Offset(width * 0.82f, height * 0.55f),
+        strokeWidth = 1f
+    )
+    
+    // Vertical divisions
+    drawLine(
+        color = color.copy(alpha = 0.3f),
+        start = Offset(width * 0.35f, height * 0.20f),
+        end = Offset(width * 0.35f, height * 0.70f),
+        strokeWidth = 1f
+    )
+    
+    drawLine(
+        color = color.copy(alpha = 0.3f),
+        start = Offset(width * 0.50f, height * 0.15f),
+        end = Offset(width * 0.50f, height * 0.75f),
+        strokeWidth = 1f
+    )
+    
+    drawLine(
+        color = color.copy(alpha = 0.3f),
+        start = Offset(width * 0.65f, height * 0.12f),
+        end = Offset(width * 0.65f, height * 0.78f),
+        strokeWidth = 1f
+    )
+    
+    drawLine(
+        color = color.copy(alpha = 0.3f),
+        start = Offset(width * 0.78f, height * 0.08f),
+        end = Offset(width * 0.78f, height * 0.75f),
+        strokeWidth = 1f
+    )
 }
