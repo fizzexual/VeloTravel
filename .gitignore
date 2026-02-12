@@ -34,5 +34,9 @@ local.properties
 *.jks
 *.keystore
 
+# Temporary keystore files
+keystore*.txt
+*.txt
+
 # Android Profiling
 *.hprof
