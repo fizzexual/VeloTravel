@@ -500,69 +500,59 @@ fun androidx.compose.ui.graphics.drawscope.DrawScope.drawBulgariaWithRegions(
     height: Float,
     color: Color
 ) {
-    // Accurate Bulgaria map with 28 administrative regions based on real boundaries
+    // Bulgaria has a distinctive rectangular shape with the Black Sea on the east
+    // Approximate dimensions: 520km west-east, 330km north-south
     
-    // Main Bulgaria outline - following actual country borders
     val bulgariaPath = Path().apply {
-        // Northwest corner - Vidin
-        moveTo(width * 0.08f, height * 0.28f)
+        // Start from northwest corner (near Vidin)
+        moveTo(width * 0.05f, height * 0.35f)
         
-        // North border - Danube River (west to east)
-        lineTo(width * 0.12f, height * 0.24f) // Vidin-Montana border
-        lineTo(width * 0.18f, height * 0.22f) // Montana
-        lineTo(width * 0.24f, height * 0.20f) // Montana-Vratsa
-        lineTo(width * 0.30f, height * 0.18f) // Vratsa
-        lineTo(width * 0.36f, height * 0.16f) // Pleven west
-        lineTo(width * 0.42f, height * 0.14f) // Pleven
-        lineTo(width * 0.48f, height * 0.12f) // Lovech
-        lineTo(width * 0.54f, height * 0.10f) // Veliko Tarnovo
-        lineTo(width * 0.60f, height * 0.08f) // Ruse west
-        lineTo(width * 0.66f, height * 0.06f) // Ruse
-        lineTo(width * 0.72f, height * 0.05f) // Razgrad
-        lineTo(width * 0.78f, height * 0.04f) // Silistra
-        lineTo(width * 0.84f, height * 0.06f) // Silistra-Dobrich
+        // North border - Danube River (slightly curved, west to east)
+        lineTo(width * 0.10f, height * 0.30f)
+        lineTo(width * 0.20f, height * 0.25f)
+        lineTo(width * 0.30f, height * 0.22f)
+        lineTo(width * 0.40f, height * 0.20f)
+        lineTo(width * 0.50f, height * 0.18f)
+        lineTo(width * 0.60f, height * 0.15f)
+        lineTo(width * 0.70f, height * 0.12f)
+        lineTo(width * 0.80f, height * 0.10f)
+        lineTo(width * 0.88f, height * 0.08f)
         
-        // Northeast corner - Dobrich
-        lineTo(width * 0.90f, height * 0.10f)
-        lineTo(width * 0.94f, height * 0.14f)
-        lineTo(width * 0.96f, height * 0.18f)
+        // Northeast corner - curves to Black Sea coast
+        lineTo(width * 0.92f, height * 0.12f)
+        lineTo(width * 0.95f, height * 0.18f)
         
-        // East coast - Black Sea (north to south)
-        lineTo(width * 0.95f, height * 0.24f) // Dobrich coast
-        lineTo(width * 0.94f, height * 0.30f) // Varna north
-        lineTo(width * 0.92f, height * 0.36f) // Varna
-        lineTo(width * 0.90f, height * 0.42f) // Varna south
-        lineTo(width * 0.88f, height * 0.48f) // Burgas north
-        lineTo(width * 0.86f, height * 0.54f) // Burgas
-        lineTo(width * 0.84f, height * 0.60f) // Burgas center
-        lineTo(width * 0.82f, height * 0.66f) // Burgas south
-        lineTo(width * 0.80f, height * 0.72f) // Burgas-Turkey border
+        // East border - Black Sea coast (straight line, north to south)
+        lineTo(width * 0.95f, height * 0.25f)
+        lineTo(width * 0.95f, height * 0.35f)
+        lineTo(width * 0.95f, height * 0.45f)
+        lineTo(width * 0.95f, height * 0.55f)
+        lineTo(width * 0.95f, height * 0.65f)
+        lineTo(width * 0.95f, height * 0.75f)
         
-        // Southeast border - Turkey (east to west)
-        lineTo(width * 0.74f, height * 0.76f) // Burgas-Yambol
-        lineTo(width * 0.68f, height * 0.78f) // Yambol
-        lineTo(width * 0.62f, height * 0.80f) // Haskovo
-        lineTo(width * 0.56f, height * 0.82f) // Kardzhali
-        lineTo(width * 0.50f, height * 0.84f) // Smolyan
-        lineTo(width * 0.44f, height * 0.82f) // Smolyan-Blagoevgrad
+        // Southeast corner - border with Turkey
+        lineTo(width * 0.90f, height * 0.82f)
+        lineTo(width * 0.85f, height * 0.85f)
         
-        // South border - Greece (east to west)
-        lineTo(width * 0.38f, height * 0.80f) // Blagoevgrad east
-        lineTo(width * 0.32f, height * 0.78f) // Blagoevgrad
-        lineTo(width * 0.26f, height * 0.76f) // Blagoevgrad west
-        lineTo(width * 0.20f, height * 0.72f) // Kyustendil
+        // South border - borders with Turkey and Greece (east to west)
+        lineTo(width * 0.75f, height * 0.88f)
+        lineTo(width * 0.65f, height * 0.90f)
+        lineTo(width * 0.55f, height * 0.92f)
+        lineTo(width * 0.45f, height * 0.92f)
+        lineTo(width * 0.35f, height * 0.90f)
+        lineTo(width * 0.25f, height * 0.88f)
+        lineTo(width * 0.18f, height * 0.85f)
         
-        // Southwest corner
-        lineTo(width * 0.16f, height * 0.68f) // Kyustendil-Pernik
+        // Southwest corner - border with Greece and North Macedonia
+        lineTo(width * 0.12f, height * 0.80f)
+        lineTo(width * 0.08f, height * 0.75f)
         
-        // West border - Serbia/North Macedonia (south to north)
-        lineTo(width * 0.14f, height * 0.62f) // Pernik
-        lineTo(width * 0.12f, height * 0.56f) // Sofia west
-        lineTo(width * 0.10f, height * 0.50f) // Sofia
-        lineTo(width * 0.09f, height * 0.44f) // Sofia-Vratsa
-        lineTo(width * 0.08f, height * 0.38f) // Vratsa-Montana
-        lineTo(width * 0.08f, height * 0.32f) // Montana
-        lineTo(width * 0.08f, height * 0.28f) // Back to start
+        // West border - borders with North Macedonia and Serbia (south to north)
+        lineTo(width * 0.06f, height * 0.68f)
+        lineTo(width * 0.05f, height * 0.60f)
+        lineTo(width * 0.05f, height * 0.52f)
+        lineTo(width * 0.05f, height * 0.44f)
+        lineTo(width * 0.05f, height * 0.35f)
         
         close()
     }
@@ -574,77 +564,23 @@ fun androidx.compose.ui.graphics.drawscope.DrawScope.drawBulgariaWithRegions(
         style = Stroke(width = 3f)
     )
     
-    // Draw 28 administrative regions with accurate boundaries
+    // Draw regional boundaries (28 regions)
+    // These are simplified vertical and horizontal divisions
     
-    // Row 1 - North (Danube regions)
-    // Vidin
-    drawRegionBoundary(width * 0.08f, height * 0.28f, width * 0.15f, height * 0.22f, color)
-    // Montana
-    drawRegionBoundary(width * 0.15f, height * 0.22f, width * 0.27f, height * 0.18f, color)
-    // Vratsa
-    drawRegionBoundary(width * 0.27f, height * 0.18f, width * 0.36f, height * 0.16f, color)
-    // Pleven
-    drawRegionBoundary(width * 0.36f, height * 0.16f, width * 0.48f, height * 0.12f, color)
-    // Lovech
-    drawRegionBoundary(width * 0.48f, height * 0.12f, width * 0.54f, height * 0.10f, color)
-    // Veliko Tarnovo
-    drawRegionBoundary(width * 0.54f, height * 0.10f, width * 0.66f, height * 0.06f, color)
-    // Ruse
-    drawRegionBoundary(width * 0.66f, height * 0.06f, width * 0.72f, height * 0.05f, color)
-    // Razgrad
-    drawRegionBoundary(width * 0.72f, height * 0.05f, width * 0.78f, height * 0.04f, color)
-    // Silistra
-    drawRegionBoundary(width * 0.78f, height * 0.04f, width * 0.84f, height * 0.06f, color)
-    // Dobrich
-    drawRegionBoundary(width * 0.84f, height * 0.06f, width * 0.96f, height * 0.18f, color)
+    // Vertical divisions (west to east)
+    drawLine(color.copy(alpha = 0.4f), Offset(width * 0.15f, height * 0.10f), Offset(width * 0.15f, height * 0.85f), 1.5f)
+    drawLine(color.copy(alpha = 0.4f), Offset(width * 0.25f, height * 0.10f), Offset(width * 0.25f, height * 0.90f), 1.5f)
+    drawLine(color.copy(alpha = 0.4f), Offset(width * 0.35f, height * 0.10f), Offset(width * 0.35f, height * 0.92f), 1.5f)
+    drawLine(color.copy(alpha = 0.4f), Offset(width * 0.45f, height * 0.10f), Offset(width * 0.45f, height * 0.92f), 1.5f)
+    drawLine(color.copy(alpha = 0.4f), Offset(width * 0.55f, height * 0.10f), Offset(width * 0.55f, height * 0.92f), 1.5f)
+    drawLine(color.copy(alpha = 0.4f), Offset(width * 0.65f, height * 0.10f), Offset(width * 0.65f, height * 0.90f), 1.5f)
+    drawLine(color.copy(alpha = 0.4f), Offset(width * 0.75f, height * 0.10f), Offset(width * 0.75f, height * 0.88f), 1.5f)
+    drawLine(color.copy(alpha = 0.4f), Offset(width * 0.85f, height * 0.10f), Offset(width * 0.85f, height * 0.85f), 1.5f)
     
-    // Row 2 - North-Central
-    // Targovishte (between Razgrad and Shumen)
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.75f, height * 0.20f), Offset(width * 0.75f, height * 0.35f), 1.5f)
-    // Shumen
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.82f, height * 0.18f), Offset(width * 0.82f, height * 0.38f), 1.5f)
-    // Varna
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.88f, height * 0.24f), Offset(width * 0.88f, height * 0.42f), 1.5f)
-    
-    // Row 3 - Central
-    // Gabrovo (between Lovech and Veliko Tarnovo)
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.51f, height * 0.30f), Offset(width * 0.51f, height * 0.45f), 1.5f)
-    
-    // Horizontal division - Central tier
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.10f, height * 0.45f), Offset(width * 0.90f, height * 0.45f), 1.5f)
-    
-    // Row 4 - South-Central
-    // Sofia City & Sofia Region
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.20f, height * 0.50f), Offset(width * 0.30f, height * 0.50f), 1.5f)
-    // Pernik
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.15f, height * 0.55f), Offset(width * 0.15f, height * 0.68f), 1.5f)
-    // Kyustendil
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.20f, height * 0.60f), Offset(width * 0.20f, height * 0.72f), 1.5f)
-    // Pazardzhik
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.35f, height * 0.55f), Offset(width * 0.35f, height * 0.70f), 1.5f)
-    // Plovdiv
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.45f, height * 0.52f), Offset(width * 0.45f, height * 0.68f), 1.5f)
-    // Stara Zagora
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.58f, height * 0.48f), Offset(width * 0.58f, height * 0.65f), 1.5f)
-    // Sliven
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.68f, height * 0.50f), Offset(width * 0.68f, height * 0.68f), 1.5f)
-    // Burgas (inland part)
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.78f, height * 0.52f), Offset(width * 0.78f, height * 0.72f), 1.5f)
-    
-    // Horizontal division - South tier
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.20f, height * 0.68f), Offset(width * 0.80f, height * 0.76f), 1.5f)
-    
-    // Row 5 - South (Rhodope regions)
-    // Blagoevgrad
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.28f, height * 0.72f), Offset(width * 0.28f, height * 0.80f), 1.5f)
-    // Smolyan
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.44f, height * 0.75f), Offset(width * 0.44f, height * 0.84f), 1.5f)
-    // Kardzhali
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.56f, height * 0.76f), Offset(width * 0.56f, height * 0.82f), 1.5f)
-    // Haskovo
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.65f, height * 0.74f), Offset(width * 0.65f, height * 0.80f), 1.5f)
-    // Yambol
-    drawLine(color.copy(alpha = 0.5f), Offset(width * 0.72f, height * 0.70f), Offset(width * 0.72f, height * 0.78f), 1.5f)
+    // Horizontal divisions (north to south)
+    drawLine(color.copy(alpha = 0.4f), Offset(width * 0.05f, height * 0.35f), Offset(width * 0.95f, height * 0.35f), 1.5f)
+    drawLine(color.copy(alpha = 0.4f), Offset(width * 0.05f, height * 0.50f), Offset(width * 0.95f, height * 0.50f), 1.5f)
+    drawLine(color.copy(alpha = 0.4f), Offset(width * 0.05f, height * 0.65f), Offset(width * 0.95f, height * 0.65f), 1.5f)
 }
 
 private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawRegionBoundary(
