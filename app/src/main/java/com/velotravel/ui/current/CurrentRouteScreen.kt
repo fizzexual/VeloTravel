@@ -500,55 +500,54 @@ fun androidx.compose.ui.graphics.drawscope.DrawScope.drawBulgariaWithRegions(
     height: Float,
     color: Color
 ) {
-    // Detailed Bulgaria outline with all 28 regions
-    // Northwest - Vidin region
+    // Main Bulgaria outline
     val bulgariaPath = Path().apply {
         moveTo(width * 0.15f, height * 0.22f) // Vidin
         
         // North border (Danube river)
-        lineTo(width * 0.22f, height * 0.18f) // Montana
-        lineTo(width * 0.32f, height * 0.20f) // Vratsa
-        lineTo(width * 0.42f, height * 0.18f) // Pleven
-        lineTo(width * 0.52f, height * 0.15f) // Lovech
-        lineTo(width * 0.62f, height * 0.12f) // Veliko Tarnovo
-        lineTo(width * 0.70f, height * 0.08f) // Ruse
-        lineTo(width * 0.78f, height * 0.06f) // Razgrad
-        lineTo(width * 0.84f, height * 0.08f) // Silistra
+        lineTo(width * 0.22f, height * 0.18f)
+        lineTo(width * 0.32f, height * 0.20f)
+        lineTo(width * 0.42f, height * 0.18f)
+        lineTo(width * 0.52f, height * 0.15f)
+        lineTo(width * 0.62f, height * 0.12f)
+        lineTo(width * 0.70f, height * 0.08f)
+        lineTo(width * 0.78f, height * 0.06f)
+        lineTo(width * 0.84f, height * 0.08f)
         
         // Northeast corner
-        lineTo(width * 0.88f, height * 0.12f) // Dobrich
+        lineTo(width * 0.88f, height * 0.12f)
         lineTo(width * 0.92f, height * 0.18f)
         
         // East coast (Black Sea)
-        lineTo(width * 0.90f, height * 0.24f) // Varna north
+        lineTo(width * 0.90f, height * 0.24f)
         lineTo(width * 0.88f, height * 0.32f)
         lineTo(width * 0.86f, height * 0.42f)
         lineTo(width * 0.85f, height * 0.52f)
-        lineTo(width * 0.84f, height * 0.60f) // Burgas north
+        lineTo(width * 0.84f, height * 0.60f)
         lineTo(width * 0.83f, height * 0.68f)
-        lineTo(width * 0.80f, height * 0.74f) // Burgas south
+        lineTo(width * 0.80f, height * 0.74f)
         
         // Southeast border
         lineTo(width * 0.75f, height * 0.76f)
-        lineTo(width * 0.68f, height * 0.78f) // Yambol
-        lineTo(width * 0.62f, height * 0.80f) // Haskovo
-        lineTo(width * 0.56f, height * 0.82f) // Kardzhali
-        lineTo(width * 0.50f, height * 0.80f) // Smolyan
+        lineTo(width * 0.68f, height * 0.78f)
+        lineTo(width * 0.62f, height * 0.80f)
+        lineTo(width * 0.56f, height * 0.82f)
+        lineTo(width * 0.50f, height * 0.80f)
         
         // South border
-        lineTo(width * 0.44f, height * 0.76f) // Plovdiv south
-        lineTo(width * 0.38f, height * 0.74f) // Pazardzhik
-        lineTo(width * 0.32f, height * 0.72f) // Blagoevgrad
+        lineTo(width * 0.44f, height * 0.76f)
+        lineTo(width * 0.38f, height * 0.74f)
+        lineTo(width * 0.32f, height * 0.72f)
         lineTo(width * 0.26f, height * 0.68f)
-        lineTo(width * 0.22f, height * 0.64f) // Kyustendil
+        lineTo(width * 0.22f, height * 0.64f)
         
         // West border
-        lineTo(width * 0.20f, height * 0.58f) // Pernik
-        lineTo(width * 0.22f, height * 0.52f) // Sofia region
+        lineTo(width * 0.20f, height * 0.58f)
+        lineTo(width * 0.22f, height * 0.52f)
         lineTo(width * 0.24f, height * 0.46f)
-        lineTo(width * 0.22f, height * 0.38f) // Vratsa
-        lineTo(width * 0.18f, height * 0.30f) // Montana
-        lineTo(width * 0.15f, height * 0.22f) // Back to Vidin
+        lineTo(width * 0.22f, height * 0.38f)
+        lineTo(width * 0.18f, height * 0.30f)
+        lineTo(width * 0.15f, height * 0.22f)
         
         close()
     }
@@ -560,48 +559,130 @@ fun androidx.compose.ui.graphics.drawscope.DrawScope.drawBulgariaWithRegions(
         style = Stroke(width = 3f)
     )
     
-    // Draw internal region borders (simplified)
-    // Horizontal divisions
+    // Draw regional boundaries
+    // Northwest regions (Vidin, Montana, Vratsa)
     drawLine(
-        color = color.copy(alpha = 0.3f),
-        start = Offset(width * 0.20f, height * 0.35f),
-        end = Offset(width * 0.85f, height * 0.35f),
-        strokeWidth = 1f
+        color = color.copy(alpha = 0.4f),
+        start = Offset(width * 0.22f, height * 0.18f),
+        end = Offset(width * 0.22f, height * 0.64f),
+        strokeWidth = 1.5f
     )
     
     drawLine(
-        color = color.copy(alpha = 0.3f),
-        start = Offset(width * 0.25f, height * 0.55f),
-        end = Offset(width * 0.82f, height * 0.55f),
-        strokeWidth = 1f
+        color = color.copy(alpha = 0.4f),
+        start = Offset(width * 0.32f, height * 0.20f),
+        end = Offset(width * 0.32f, height * 0.72f),
+        strokeWidth = 1.5f
     )
     
-    // Vertical divisions
+    // North-central regions (Pleven, Lovech, Veliko Tarnovo)
     drawLine(
-        color = color.copy(alpha = 0.3f),
-        start = Offset(width * 0.35f, height * 0.20f),
-        end = Offset(width * 0.35f, height * 0.70f),
-        strokeWidth = 1f
-    )
-    
-    drawLine(
-        color = color.copy(alpha = 0.3f),
-        start = Offset(width * 0.50f, height * 0.15f),
-        end = Offset(width * 0.50f, height * 0.75f),
-        strokeWidth = 1f
+        color = color.copy(alpha = 0.4f),
+        start = Offset(width * 0.42f, height * 0.18f),
+        end = Offset(width * 0.42f, height * 0.60f),
+        strokeWidth = 1.5f
     )
     
     drawLine(
-        color = color.copy(alpha = 0.3f),
-        start = Offset(width * 0.65f, height * 0.12f),
-        end = Offset(width * 0.65f, height * 0.78f),
-        strokeWidth = 1f
+        color = color.copy(alpha = 0.4f),
+        start = Offset(width * 0.52f, height * 0.15f),
+        end = Offset(width * 0.52f, height * 0.75f),
+        strokeWidth = 1.5f
     )
     
     drawLine(
-        color = color.copy(alpha = 0.3f),
-        start = Offset(width * 0.78f, height * 0.08f),
+        color = color.copy(alpha = 0.4f),
+        start = Offset(width * 0.62f, height * 0.12f),
+        end = Offset(width * 0.62f, height * 0.80f),
+        strokeWidth = 1.5f
+    )
+    
+    // Northeast regions (Ruse, Razgrad, Targovishte, Shumen, Dobrich)
+    drawLine(
+        color = color.copy(alpha = 0.4f),
+        start = Offset(width * 0.70f, height * 0.08f),
+        end = Offset(width * 0.70f, height * 0.60f),
+        strokeWidth = 1.5f
+    )
+    
+    drawLine(
+        color = color.copy(alpha = 0.4f),
+        start = Offset(width * 0.78f, height * 0.06f),
         end = Offset(width * 0.78f, height * 0.75f),
+        strokeWidth = 1.5f
+    )
+    
+    // Horizontal divisions
+    // North tier
+    drawLine(
+        color = color.copy(alpha = 0.4f),
+        start = Offset(width * 0.15f, height * 0.30f),
+        end = Offset(width * 0.88f, height * 0.30f),
+        strokeWidth = 1.5f
+    )
+    
+    // Central tier
+    drawLine(
+        color = color.copy(alpha = 0.4f),
+        start = Offset(width * 0.20f, height * 0.45f),
+        end = Offset(width * 0.86f, height * 0.45f),
+        strokeWidth = 1.5f
+    )
+    
+    // South-central tier
+    drawLine(
+        color = color.copy(alpha = 0.4f),
+        start = Offset(width * 0.22f, height * 0.60f),
+        end = Offset(width * 0.84f, height * 0.60f),
+        strokeWidth = 1.5f
+    )
+    
+    // South tier
+    drawLine(
+        color = color.copy(alpha = 0.4f),
+        start = Offset(width * 0.26f, height * 0.72f),
+        end = Offset(width * 0.75f, height * 0.76f),
+        strokeWidth = 1.5f
+    )
+    
+    // Additional diagonal boundaries for more accurate regions
+    // Sofia region boundary
+    drawLine(
+        color = color.copy(alpha = 0.3f),
+        start = Offset(width * 0.32f, height * 0.52f),
+        end = Offset(width * 0.42f, height * 0.52f),
+        strokeWidth = 1f
+    )
+    
+    // Plovdiv region boundary
+    drawLine(
+        color = color.copy(alpha = 0.3f),
+        start = Offset(width * 0.42f, height * 0.55f),
+        end = Offset(width * 0.52f, height * 0.55f),
+        strokeWidth = 1f
+    )
+    
+    // Stara Zagora region boundary
+    drawLine(
+        color = color.copy(alpha = 0.3f),
+        start = Offset(width * 0.52f, height * 0.52f),
+        end = Offset(width * 0.62f, height * 0.52f),
+        strokeWidth = 1f
+    )
+    
+    // Burgas region boundary
+    drawLine(
+        color = color.copy(alpha = 0.3f),
+        start = Offset(width * 0.78f, height * 0.60f),
+        end = Offset(width * 0.84f, height * 0.68f),
+        strokeWidth = 1f
+    )
+    
+    // Varna region boundary
+    drawLine(
+        color = color.copy(alpha = 0.3f),
+        start = Offset(width * 0.78f, height * 0.20f),
+        end = Offset(width * 0.88f, height * 0.25f),
         strokeWidth = 1f
     )
 }
