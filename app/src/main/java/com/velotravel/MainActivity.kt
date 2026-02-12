@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -24,6 +26,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.velotravel.ui.achievements.AchievementsScreen
 import com.velotravel.ui.achievements.AchievementsViewModel
+import com.velotravel.ui.current.CurrentRouteScreen
+import com.velotravel.ui.current.CurrentRouteViewModel
 import com.velotravel.ui.history.HistoryScreen
 import com.velotravel.ui.history.HistoryViewModel
 import com.velotravel.ui.home.HomeScreen
@@ -43,6 +47,7 @@ class MainActivity : ComponentActivity() {
             VeloTravelTheme {
                 VeloTravelNavigation(
                     homeViewModel = HomeViewModel(repository),
+                    currentRouteViewModel = CurrentRouteViewModel(repository),
                     routeSelectionViewModel = RouteSelectionViewModel(repository),
                     historyViewModel = HistoryViewModel(repository),
                     achievementsViewModel = AchievementsViewModel(repository)
@@ -59,6 +64,7 @@ sealed class Screen(
     val iconUnselected: ImageVector
 ) {
     object Home : Screen("home", "Начало", Icons.Filled.Home, Icons.Outlined.Home)
+    object Current : Screen("current", "Текущ", Icons.Filled.LocationOn, Icons.Outlined.LocationOn)
     object Routes : Screen("routes", "Маршрути", Icons.Filled.List, Icons.Outlined.List)
     object Achievements : Screen("achievements", "Постижения", Icons.Filled.Star, Icons.Outlined.Star)
 }
@@ -66,6 +72,7 @@ sealed class Screen(
 @Composable
 fun VeloTravelNavigation(
     homeViewModel: HomeViewModel,
+    currentRouteViewModel: CurrentRouteViewModel,
     routeSelectionViewModel: RouteSelectionViewModel,
     historyViewModel: HistoryViewModel,
     achievementsViewModel: AchievementsViewModel
@@ -76,6 +83,7 @@ fun VeloTravelNavigation(
     
     val bottomNavItems = listOf(
         Screen.Home,
+        Screen.Current,
         Screen.Routes,
         Screen.Achievements
     )
@@ -120,6 +128,12 @@ fun VeloTravelNavigation(
                     onSelectRoute = { navController.navigate(Screen.Routes.route) },
                     onViewHistory = { navController.navigate("history") },
                     onViewAchievements = { navController.navigate(Screen.Achievements.route) }
+                )
+            }
+            
+            composable(Screen.Current.route) {
+                CurrentRouteScreen(
+                    viewModel = currentRouteViewModel
                 )
             }
             
