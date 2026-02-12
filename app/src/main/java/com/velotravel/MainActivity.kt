@@ -3,9 +3,24 @@ package com.velotravel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.velotravel.ui.achievements.AchievementsScreen
 import com.velotravel.ui.achievements.AchievementsViewModel
@@ -37,6 +52,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+sealed class Screen(
+    val route: String,
+    val title: String,
+    val iconSelected: ImageVector,
+    val iconUnselected: ImageVector
+) {
+    object Home : Screen("home", "Начало", Icons.Filled.Home, Icons.Outlined.Home)
+    object Routes : Screen("routes", "Маршрути", Icons.Filled.List, Icons.Outlined.List)
+    object Achievements : Screen("achievements", "Постижения", Icons.Filled.Star, Icons.Outlined.Star)
+}
+
 @Composable
 fun VeloTravelNavigation(
     homeViewModel: HomeViewModel,
@@ -45,37 +71,79 @@ fun VeloTravelNavigation(
     achievementsViewModel: AchievementsViewModel
 ) {
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
     
-    NavHost(navController = navController, startDestination = "home") {
-        composable("home") {
-            HomeScreen(
-                viewModel = homeViewModel,
-                onSelectRoute = { navController.navigate("routes") },
-                onViewHistory = { navController.navigate("history") },
-                onViewAchievements = { navController.navigate("achievements") }
-            )
+    val bottomNavItems = listOf(
+        Screen.Home,
+        Screen.Routes,
+        Screen.Achievements
+    )
+    
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                bottomNavItems.forEach { screen ->
+                    val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
+                    
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                imageVector = if (selected) screen.iconSelected else screen.iconUnselected,
+                                contentDescription = screen.title
+                            )
+                        },
+                        label = { Text(screen.title) },
+                        selected = selected,
+                        onClick = {
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
+            }
         }
-        
-        composable("routes") {
-            RouteSelectionScreen(
-                viewModel = routeSelectionViewModel,
-                onBack = { navController.popBackStack() },
-                onRouteSelected = { navController.popBackStack() }
-            )
-        }
-        
-        composable("history") {
-            HistoryScreen(
-                viewModel = historyViewModel,
-                onBack = { navController.popBackStack() }
-            )
-        }
-        
-        composable("achievements") {
-            AchievementsScreen(
-                viewModel = achievementsViewModel,
-                onBack = { navController.popBackStack() }
-            )
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(Screen.Home.route) {
+                HomeScreen(
+                    viewModel = homeViewModel,
+                    onSelectRoute = { navController.navigate(Screen.Routes.route) },
+                    onViewHistory = { navController.navigate("history") },
+                    onViewAchievements = { navController.navigate(Screen.Achievements.route) }
+                )
+            }
+            
+            composable(Screen.Routes.route) {
+                RouteSelectionScreen(
+                    viewModel = routeSelectionViewModel,
+                    onBack = { navController.navigate(Screen.Home.route) },
+                    onRouteSelected = { navController.navigate(Screen.Home.route) }
+                )
+            }
+            
+            composable("history") {
+                HistoryScreen(
+                    viewModel = historyViewModel,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            
+            composable(Screen.Achievements.route) {
+                AchievementsScreen(
+                    viewModel = achievementsViewModel,
+                    onBack = { navController.navigate(Screen.Home.route) }
+                )
+            }
         }
     }
 }
