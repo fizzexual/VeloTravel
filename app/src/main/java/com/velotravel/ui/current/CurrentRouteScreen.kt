@@ -44,10 +44,10 @@ class CurrentRouteViewModel(
     
     private fun loadCurrentRoute() {
         viewModelScope.launch {
-            repository.getCurrentProgress().collect { progress ->
+            repository.getCurrentActiveRoute().collect { progress ->
                 progress?.let {
                     _currentRoute.value = Routes.getById(it.routeId)
-                    _progressKm.value = it.totalKm
+                    _progressKm.value = it.totalKmCompleted
                 }
             }
         }
