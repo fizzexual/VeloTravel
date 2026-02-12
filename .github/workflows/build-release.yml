@@ -1,0 +1,55 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+      
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+      
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+      - name: Rename APK
+        run: |
+          mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/VeloTravel-v${{ steps.get_version.outputs.VERSION }}.apk
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: app/build/outputs/apk/release/VeloTravel-v${{ steps.get_version.outputs.VERSION }}.apk
+          generate_release_notes: true
+          name: VeloTravel v${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ## 🚴 VeloTravel v${{ steps.get_version.outputs.VERSION }}
+            
+            ### 📥 Как да инсталирате:
+            1. Изтеглете файла `VeloTravel-v${{ steps.get_version.outputs.VERSION }}.apk`
+            2. Отворете файла на телефона си
+            3. Разрешете инсталация от неизвестни източници (ако се изисква)
+            4. Инсталирайте приложението
+            
+            ### ✨ Автоматична актуализация:
+            Ако вече имате приложението, то автоматично ще ви извести за тази нова версия!
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
