@@ -29,13 +29,25 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
       
+      - name: Sign APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+      
       - name: Get version from tag
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
       
       - name: Rename APK
         run: |
-          mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/VeloTravel-v${{ steps.get_version.outputs.VERSION }}.apk
+          mv ${{steps.sign_app.outputs.signedReleaseFile}} app/build/outputs/apk/release/VeloTravel-v${{ steps.get_version.outputs.VERSION }}.apk
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
