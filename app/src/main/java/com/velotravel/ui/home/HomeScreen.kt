@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.velotravel.data.model.Activity
 import com.velotravel.data.model.ActivityType
+import com.velotravel.data.model.getIcon
 import java.text.SimpleDateFormat
 import java.util.*
 
