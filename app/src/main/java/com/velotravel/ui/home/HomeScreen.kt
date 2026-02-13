@@ -253,7 +253,7 @@ private fun EmptyState() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            imageVector = Icons.Default.FitnessCenter,
+            imageVector = Icons.Default.SportsScore,
             contentDescription = null,
             modifier = Modifier.size(80.dp),
             tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
@@ -375,7 +375,7 @@ private fun AddActivityDialog(
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         leadingIcon = {
-                            Icon(Icons.Default.Schedule, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(20.dp))
                         }
                     )
                 }
@@ -393,7 +393,7 @@ private fun AddActivityDialog(
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         leadingIcon = {
-                            Icon(Icons.Default.LocalFireDepartment, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.Whatshot, contentDescription = null, modifier = Modifier.size(20.dp))
                         }
                     )
                     
@@ -405,7 +405,7 @@ private fun AddActivityDialog(
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         leadingIcon = {
-                            Icon(Icons.Default.DirectionsWalk, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(20.dp))
                         }
                     )
                 }
