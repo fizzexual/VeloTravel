@@ -24,7 +24,7 @@ class UpdateChecker(private val context: Context) {
     
     companion object {
         private const val GITHUB_API_URL = "https://api.github.com/repos/fizzexual/VeloTravel/releases/latest"
-        private const val CURRENT_VERSION = "2.0.2" // Fixed minSdk to 26 for Health Connect, added Gradle caching
+        private const val CURRENT_VERSION = "2.0.3" // Fixed Material icon references
     }
     
     suspend fun checkForUpdates(): UpdateInfo? = withContext(Dispatchers.IO) {

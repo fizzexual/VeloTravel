@@ -253,7 +253,7 @@ private fun EmptyState() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            imageVector = Icons.Default.DirectionsRun,
+            imageVector = Icons.Default.FitnessCenter,
             contentDescription = null,
             modifier = Modifier.size(80.dp),
             tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
@@ -362,7 +362,7 @@ private fun AddActivityDialog(
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         leadingIcon = {
-                            Icon(Icons.Default.Route, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.Place, contentDescription = null, modifier = Modifier.size(20.dp))
                         }
                     )
                     
@@ -375,7 +375,7 @@ private fun AddActivityDialog(
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         leadingIcon = {
-                            Icon(Icons.Default.Timer, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.Schedule, contentDescription = null, modifier = Modifier.size(20.dp))
                         }
                     )
                 }
@@ -405,7 +405,7 @@ private fun AddActivityDialog(
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         leadingIcon = {
-                            Icon(Icons.Default.Footprint, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.DirectionsWalk, contentDescription = null, modifier = Modifier.size(20.dp))
                         }
                     )
                 }
@@ -431,7 +431,7 @@ private fun AddActivityDialog(
                     minLines = 2,
                     maxLines = 3,
                     leadingIcon = {
-                        Icon(Icons.Default.Notes, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(20.dp))
                     }
                 )
                 

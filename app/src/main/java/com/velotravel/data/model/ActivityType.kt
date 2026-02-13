@@ -16,6 +16,6 @@ fun ActivityType.getIcon(): ImageVector {
         ActivityType.WALKING -> Icons.Default.DirectionsWalk
         ActivityType.RUNNING -> Icons.Default.DirectionsRun
         ActivityType.CYCLING -> Icons.Default.DirectionsBike
-        ActivityType.HIKING -> Icons.Default.Terrain
+        ActivityType.HIKING -> Icons.Default.Hiking
     }
 }
