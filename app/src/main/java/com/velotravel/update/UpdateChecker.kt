@@ -24,7 +24,7 @@ class UpdateChecker(private val context: Context) {
     
     companion object {
         private const val GITHUB_API_URL = "https://api.github.com/repos/fizzexual/VeloTravel/releases/latest"
-        private const val CURRENT_VERSION = "2.2.0" // Premium Apple-style white design with calendar view
+        private const val CURRENT_VERSION = "2.2.1" // Pure white UI, calendar navigation, simplified activity form (km/kcal/steps only)
     }
     
     suspend fun checkForUpdates(): UpdateInfo? = withContext(Dispatchers.IO) {

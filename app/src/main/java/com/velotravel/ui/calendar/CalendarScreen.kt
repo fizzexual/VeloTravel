@@ -33,9 +33,8 @@ fun CalendarScreen(
     activities: List<Activity>
 ) {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
-    val calendar = Calendar.getInstance()
-    val currentMonth = calendar.get(Calendar.MONTH)
-    val currentYear = calendar.get(Calendar.YEAR)
+    var currentMonth by remember { mutableStateOf(Calendar.getInstance().get(Calendar.MONTH)) }
+    var currentYear by remember { mutableStateOf(Calendar.getInstance().get(Calendar.YEAR)) }
     
     // Group activities by date
     val activitiesByDate = activities.groupBy { activity ->
@@ -54,33 +53,68 @@ fun CalendarScreen(
                     ) 
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                    containerColor = Color.White,
+                    titleContentColor = Color(0xFF1D1D1F)
                 )
             )
-        }
+        },
+        containerColor = Color.White
     ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(MaterialTheme.colorScheme.background),
+                .background(Color.White),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Month Header
+            // Month Navigation
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    IconButton(onClick = {
+                        if (currentMonth == 0) {
+                            currentMonth = 11
+                            currentYear--
+                        } else {
+                            currentMonth--
+                        }
+                    }) {
+                        Icon(
+                            Icons.Default.KeyboardArrowLeft,
+                            contentDescription = "Previous month",
+                            tint = Color(0xFF007AFF)
+                        )
+                    }
+                    
                     Text(
-                        text = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Date()),
+                        text = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(
+                            Calendar.getInstance().apply {
+                                set(currentYear, currentMonth, 1)
+                            }.time
+                        ),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = Color(0xFF1D1D1F)
                     )
+                    
+                    IconButton(onClick = {
+                        if (currentMonth == 11) {
+                            currentMonth = 0
+                            currentYear++
+                        } else {
+                            currentMonth++
+                        }
+                    }) {
+                        Icon(
+                            Icons.Default.KeyboardArrowRight,
+                            contentDescription = "Next month",
+                            tint = Color(0xFF007AFF)
+                        )
+                    }
                 }
             }
             
@@ -101,7 +135,7 @@ fun CalendarScreen(
                     text = "Activity Summary",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = Color(0xFF1D1D1F)
                 )
             }
             
@@ -165,10 +199,10 @@ private fun CalendarGrid(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = Color.White
         ),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -184,7 +218,7 @@ private fun CalendarGrid(
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = Color(0xFF86868B),
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -240,8 +274,8 @@ private fun DayCell(
             .clip(CircleShape)
             .background(
                 when {
-                    isSelected -> MaterialTheme.colorScheme.primary
-                    hasActivity -> MaterialTheme.colorScheme.primaryContainer
+                    isSelected -> Color(0xFF007AFF)
+                    hasActivity -> Color(0xFFE3F2FD)
                     else -> Color.Transparent
                 }
             )
@@ -255,9 +289,9 @@ private fun DayCell(
                 text = day.toString(),
                 style = MaterialTheme.typography.bodyMedium,
                 color = when {
-                    isSelected -> MaterialTheme.colorScheme.onPrimary
-                    hasActivity -> MaterialTheme.colorScheme.primary
-                    else -> MaterialTheme.colorScheme.onSurface
+                    isSelected -> Color.White
+                    hasActivity -> Color(0xFF007AFF)
+                    else -> Color(0xFF1D1D1F)
                 },
                 fontWeight = if (hasActivity) FontWeight.Bold else FontWeight.Normal
             )
@@ -266,7 +300,7 @@ private fun DayCell(
                     modifier = Modifier
                         .size(4.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
+                        .background(Color(0xFF007AFF))
                 )
             }
         }
@@ -283,7 +317,7 @@ private fun MiniStatCard(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = Color(0xFFF5F5F7)
         ),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -296,18 +330,18 @@ private fun MiniStatCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = Color(0xFF86868B)
             )
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = Color(0xFF1D1D1F)
             )
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = Color(0xFF86868B)
             )
         }
     }
@@ -320,9 +354,10 @@ private fun CompactActivityCard(activity: Activity) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = Color.White
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
             modifier = Modifier
@@ -343,12 +378,13 @@ private fun CompactActivityCard(activity: Activity) {
                 Text(
                     text = activity.type.displayName,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF1D1D1F)
                 )
                 Text(
                     text = "${dateFormat.format(Date(activity.date))} • ${activity.location}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = Color(0xFF86868B)
                 )
             }
             
@@ -356,7 +392,7 @@ private fun CompactActivityCard(activity: Activity) {
                 text = "${String.format("%.1f", activity.distance)} km",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = Color(0xFF1D1D1F)
             )
         }
     }
