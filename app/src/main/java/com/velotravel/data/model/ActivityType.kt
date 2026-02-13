@@ -14,8 +14,8 @@ enum class ActivityType(val displayName: String) {
 fun ActivityType.getIcon(): ImageVector {
     return when (this) {
         ActivityType.WALKING -> Icons.Default.Person
-        ActivityType.RUNNING -> Icons.Default.Speed
-        ActivityType.CYCLING -> Icons.Default.TwoWheeler
-        ActivityType.HIKING -> Icons.Default.Landscape
+        ActivityType.RUNNING -> Icons.Default.Star
+        ActivityType.CYCLING -> Icons.Default.Settings
+        ActivityType.HIKING -> Icons.Default.Place
     }
 }
