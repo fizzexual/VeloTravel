@@ -23,9 +23,9 @@ fun ActivityType.getIcon(): ImageVector {
 
 fun ActivityType.getColor(): Color {
     return when (this) {
-        ActivityType.WALKING -> Color(0xFF4CAF50)  // Green
-        ActivityType.RUNNING -> Color(0xFFFF5722)  // Deep Orange
-        ActivityType.CYCLING -> Color(0xFF2196F3)  // Blue
-        ActivityType.HIKING -> Color(0xFF9C27B0)   // Purple
+        ActivityType.WALKING -> Color(0xFF34C759)  // Apple Green
+        ActivityType.RUNNING -> Color(0xFFFF3B30)  // Apple Red
+        ActivityType.CYCLING -> Color(0xFF007AFF)  // Apple Blue
+        ActivityType.HIKING -> Color(0xFFAF52DE)   // Apple Purple
     }
 }

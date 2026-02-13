@@ -6,14 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.lifecycle.lifecycleScope
@@ -26,6 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import com.velotravel.health.HealthConnectManager
 import com.velotravel.ui.achievements.AchievementsScreen
 import com.velotravel.ui.achievements.AchievementsViewModel
+import com.velotravel.ui.calendar.CalendarScreen
 import com.velotravel.ui.home.HomeScreen
 import com.velotravel.ui.home.HomeViewModel
 import com.velotravel.ui.theme.VeloTravelTheme
@@ -137,8 +138,9 @@ sealed class Screen(
     val iconSelected: ImageVector,
     val iconUnselected: ImageVector
 ) {
-    object Home : Screen("home", "Home", Icons.Filled.Home, Icons.Outlined.Home)
-    object Achievements : Screen("achievements", "Achievements", Icons.Filled.Star, Icons.Outlined.Star)
+    object Home : Screen("home", "Activities", Icons.Filled.Home, Icons.Outlined.Home)
+    object Calendar : Screen("calendar", "Calendar", Icons.Filled.DateRange, Icons.Outlined.DateRange)
+    object Achievements : Screen("achievements", "Goals", Icons.Filled.Star, Icons.Outlined.Star)
 }
 
 @Composable
@@ -152,12 +154,16 @@ fun TravelJourneysNavigation(
     
     val bottomNavItems = listOf(
         Screen.Home,
+        Screen.Calendar,
         Screen.Achievements
     )
     
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = MaterialTheme.colorScheme.surface,
+                tonalElevation = 0.dp
+            ) {
                 bottomNavItems.forEach { screen ->
                     val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
                     
@@ -168,7 +174,13 @@ fun TravelJourneysNavigation(
                                 contentDescription = screen.title
                             )
                         },
-                        label = { Text(screen.title) },
+                        label = { 
+                            Text(
+                                screen.title,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
+                            ) 
+                        },
                         selected = selected,
                         onClick = {
                             navController.navigate(screen.route) {
@@ -178,7 +190,14 @@ fun TravelJourneysNavigation(
                                 launchSingleTop = true
                                 restoreState = true
                             }
-                        }
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                        )
                     )
                 }
             }
@@ -195,6 +214,12 @@ fun TravelJourneysNavigation(
                     onSelectRoute = { },
                     onViewHistory = { },
                     onViewAchievements = { navController.navigate(Screen.Achievements.route) }
+                )
+            }
+            
+            composable(Screen.Calendar.route) {
+                CalendarScreen(
+                    activities = homeViewModel.activities.collectAsState().value
                 )
             }
             

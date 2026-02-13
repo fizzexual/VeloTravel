@@ -5,56 +5,79 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// Vibrant color palette
-private val Purple80 = Color(0xFFD0BCFF)
-private val PurpleGrey80 = Color(0xFFCCC2DC)
-private val Pink80 = Color(0xFFEFB8C8)
-private val Purple40 = Color(0xFF6650a4)
-private val PurpleGrey40 = Color(0xFF625b71)
-private val Pink40 = Color(0xFF7D5260)
-
-// Custom vibrant colors
-private val Teal = Color(0xFF00BCD4)
-private val Orange = Color(0xFFFF9800)
-private val Green = Color(0xFF4CAF50)
-private val Blue = Color(0xFF2196F3)
-private val Red = Color(0xFFE91E63)
-private val Yellow = Color(0xFFFFC107)
-
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
-    background = Color(0xFF1C1B1F),
-    surface = Color(0xFF1C1B1F),
-    onPrimary = Color(0xFF381E72),
-    onSecondary = Color(0xFF332D41),
-    onTertiary = Color(0xFF492532),
-    onBackground = Color(0xFFE6E1E5),
-    onSurface = Color(0xFFE6E1E5),
-    primaryContainer = Color(0xFF4F378B),
-    secondaryContainer = Color(0xFF4A4458),
-    tertiaryContainer = Color(0xFF633B48),
-    surfaceVariant = Color(0xFF49454F),
-    onSurfaceVariant = Color(0xFFCAC4D0)
-)
+// Premium Apple-style colors
+private val AppleWhite = Color(0xFFFFFFFF)
+private val AppleGray = Color(0xFFF5F5F7)
+private val AppleLightGray = Color(0xFFFBFBFD)
+private val AppleDarkGray = Color(0xFF1D1D1F)
+private val AppleTextPrimary = Color(0xFF1D1D1F)
+private val AppleTextSecondary = Color(0xFF86868B)
+private val AppleBlue = Color(0xFF007AFF)
+private val AppleGreen = Color(0xFF34C759)
+private val AppleOrange = Color(0xFFFF9500)
+private val ApplePurple = Color(0xFFAF52DE)
+private val AppleRed = Color(0xFFFF3B30)
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = AppleBlue,
     onPrimary = Color.White,
+    primaryContainer = AppleBlue.copy(alpha = 0.1f),
+    onPrimaryContainer = AppleBlue,
+    
+    secondary = AppleTextSecondary,
     onSecondary = Color.White,
+    secondaryContainer = AppleGray,
+    onSecondaryContainer = AppleTextPrimary,
+    
+    tertiary = AppleGreen,
     onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    primaryContainer = Color(0xFFEADDFF),
-    secondaryContainer = Color(0xFFE8DEF8),
-    tertiaryContainer = Color(0xFFFFD8E4),
-    surfaceVariant = Color(0xFFE7E0EC),
-    onSurfaceVariant = Color(0xFF49454F)
+    tertiaryContainer = AppleGreen.copy(alpha = 0.1f),
+    onTertiaryContainer = AppleGreen,
+    
+    background = AppleWhite,
+    onBackground = AppleTextPrimary,
+    
+    surface = AppleWhite,
+    onSurface = AppleTextPrimary,
+    surfaceVariant = AppleGray,
+    onSurfaceVariant = AppleTextSecondary,
+    
+    outline = AppleGray,
+    outlineVariant = AppleLightGray,
+    
+    error = AppleRed,
+    onError = Color.White
+)
+
+private val DarkColorScheme = darkColorScheme(
+    primary = AppleBlue,
+    onPrimary = Color.White,
+    primaryContainer = AppleBlue.copy(alpha = 0.2f),
+    onPrimaryContainer = AppleBlue,
+    
+    secondary = AppleTextSecondary,
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFF2C2C2E),
+    onSecondaryContainer = Color(0xFFE5E5EA),
+    
+    tertiary = AppleGreen,
+    onTertiary = Color.White,
+    tertiaryContainer = AppleGreen.copy(alpha = 0.2f),
+    onTertiaryContainer = AppleGreen,
+    
+    background = AppleDarkGray,
+    onBackground = Color(0xFFE5E5EA),
+    
+    surface = AppleDarkGray,
+    onSurface = Color(0xFFE5E5EA),
+    surfaceVariant = Color(0xFF2C2C2E),
+    onSurfaceVariant = AppleTextSecondary,
+    
+    outline = Color(0xFF3A3A3C),
+    outlineVariant = Color(0xFF2C2C2E),
+    
+    error = AppleRed,
+    onError = Color.White
 )
 
 @Composable
