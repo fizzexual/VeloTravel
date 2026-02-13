@@ -2,6 +2,7 @@ package com.velotravel.data.repository
 
 import com.velotravel.data.Routes
 import com.velotravel.data.local.AchievementDao
+import com.velotravel.data.local.ActivityDao
 import com.velotravel.data.local.DailyEntryDao
 import com.velotravel.data.local.UserProgressDao
 import com.velotravel.data.model.*
@@ -11,8 +12,32 @@ import kotlinx.coroutines.flow.first
 class VeloRepository(
     private val dailyEntryDao: DailyEntryDao,
     private val userProgressDao: UserProgressDao,
-    private val achievementDao: AchievementDao
+    private val achievementDao: AchievementDao,
+    private val activityDao: ActivityDao
 ) {
+    // Activities
+    suspend fun addActivity(activity: Activity): Long {
+        return activityDao.insertActivity(activity)
+    }
+    
+    fun getAllActivities(): Flow<List<Activity>> =
+        activityDao.getAllActivities()
+    
+    fun getActivitiesByType(type: ActivityType): Flow<List<Activity>> =
+        activityDao.getActivitiesByType(type.name)
+    
+    fun getTotalDistance(): Flow<Double?> =
+        activityDao.getTotalDistance()
+    
+    fun getTotalCalories(): Flow<Int?> =
+        activityDao.getTotalCalories()
+    
+    fun getTotalSteps(): Flow<Int?> =
+        activityDao.getTotalSteps()
+    
+    suspend fun deleteActivity(activity: Activity) {
+        activityDao.deleteActivity(activity)
+    }
     // Routes
     fun getAllRoutes() = Routes.getAll()
     fun getRouteById(id: String) = Routes.getById(id)

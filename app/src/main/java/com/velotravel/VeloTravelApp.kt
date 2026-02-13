@@ -12,7 +12,8 @@ class VeloTravelApp : Application() {
         VeloRepository(
             dailyEntryDao = database.dailyEntryDao(),
             userProgressDao = database.userProgressDao(),
-            achievementDao = database.achievementDao()
+            achievementDao = database.achievementDao(),
+            activityDao = database.activityDao()
         )
     }
 }
