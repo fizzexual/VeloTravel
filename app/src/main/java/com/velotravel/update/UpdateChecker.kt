@@ -24,7 +24,7 @@ class UpdateChecker(private val context: Context) {
     
     companion object {
         private const val GITHUB_API_URL = "https://api.github.com/repos/fizzexual/VeloTravel/releases/latest"
-        private const val CURRENT_VERSION = "2.0.0" // Major rework: Travel Journeys - Multi-activity tracking app
+        private const val CURRENT_VERSION = "2.0.1" // UI improvements: Material icons, better dialog, Samsung Health integration
     }
     
     suspend fun checkForUpdates(): UpdateInfo? = withContext(Dispatchers.IO) {

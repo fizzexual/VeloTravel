@@ -3,6 +3,7 @@ package com.velotravel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -13,6 +14,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.PermissionController
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -20,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.velotravel.health.HealthConnectManager
 import com.velotravel.ui.achievements.AchievementsScreen
 import com.velotravel.ui.achievements.AchievementsViewModel
 import com.velotravel.ui.home.HomeScreen
@@ -35,12 +39,21 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private lateinit var updateChecker: UpdateChecker
     
+    private val requestPermissions = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { granted ->
+        // Permissions result handled
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         val app = application as VeloTravelApp
         val repository = app.repository
         updateChecker = UpdateChecker(this)
+        
+        // Request Health Connect permissions
+        requestHealthPermissions()
         
         setContent {
             VeloTravelTheme {
@@ -64,7 +77,7 @@ class MainActivity : ComponentActivity() {
                 }
                 
                 TravelJourneysNavigation(
-                    homeViewModel = HomeViewModel(repository),
+                    homeViewModel = HomeViewModel(application, repository),
                     achievementsViewModel = AchievementsViewModel(repository)
                 )
                 
@@ -90,6 +103,28 @@ class MainActivity : ComponentActivity() {
                     NoUpdateDialog(
                         onDismiss = { showNoUpdateDialog = false }
                     )
+                }
+            }
+        }
+    }
+    
+    private fun requestHealthPermissions() {
+        if (HealthConnectClient.getSdkStatus(this) == HealthConnectClient.SDK_AVAILABLE) {
+            lifecycleScope.launch {
+                try {
+                    val healthConnectClient = HealthConnectClient.getOrCreate(this@MainActivity)
+                    val granted = healthConnectClient.permissionController.getGrantedPermissions()
+                    
+                    if (!HealthConnectManager.PERMISSIONS.all { it in granted }) {
+                        val permissionContract = PermissionController.createRequestPermissionResultContract()
+                        val intent = permissionContract.createIntent(
+                            this@MainActivity,
+                            HealthConnectManager.PERMISSIONS
+                        )
+                        startActivity(intent)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }

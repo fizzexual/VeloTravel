@@ -70,6 +70,9 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
     
+    // Health Connect (for Samsung Health integration)
+    implementation("androidx.health.connect:connect-client:1.1.0-alpha07")
+    
     // Core
     implementation("androidx.core:core-ktx:1.12.0")
 }

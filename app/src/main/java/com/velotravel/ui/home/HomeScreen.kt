@@ -4,17 +4,21 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.velotravel.data.model.Activity
 import com.velotravel.data.model.ActivityType
 import java.text.SimpleDateFormat
@@ -174,9 +178,9 @@ private fun ActivityCard(activity: Activity) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
             modifier = Modifier
@@ -184,11 +188,20 @@ private fun ActivityCard(activity: Activity) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = activity.type.emoji,
-                fontSize = 32.sp,
-                modifier = Modifier.padding(end = 16.dp)
-            )
+            Surface(
+                modifier = Modifier.size(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Icon(
+                    imageVector = activity.type.getIcon(),
+                    contentDescription = activity.type.displayName,
+                    modifier = Modifier.padding(12.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(16.dp))
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -239,9 +252,11 @@ private fun EmptyState() {
             .padding(vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "🏃",
-            fontSize = 64.sp
+        Icon(
+            imageVector = Icons.Default.DirectionsRun,
+            contentDescription = null,
+            modifier = Modifier.size(80.dp),
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -273,16 +288,45 @@ private fun AddActivityDialog(
     var location by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Add Activity") },
-        text = {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 600.dp),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // Title
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Add Activity",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    IconButton(onClick = onDismiss) {
+                        Icon(Icons.Default.Close, "Close")
+                    }
+                }
+                
                 // Activity Type Selector
-                Text("Activity Type", style = MaterialTheme.typography.labelMedium)
+                Text(
+                    text = "Activity Type",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -291,87 +335,143 @@ private fun AddActivityDialog(
                         FilterChip(
                             selected = selectedType == type,
                             onClick = { selectedType = type },
-                            label = { Text("${type.emoji} ${type.displayName}") }
+                            label = { Text(type.displayName, fontSize = 12.sp) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = type.getIcon(),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            },
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }
                 
-                OutlinedTextField(
-                    value = distance,
-                    onValueChange = { distance = it },
-                    label = { Text("Distance (km)") },
+                // Input Fields
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedTextField(
+                        value = distance,
+                        onValueChange = { if (it.isEmpty() || it.matches(Regex("^\\d*\\.?\\d*$"))) distance = it },
+                        label = { Text("Distance") },
+                        placeholder = { Text("0.0") },
+                        suffix = { Text("km") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        leadingIcon = {
+                            Icon(Icons.Default.Route, contentDescription = null, modifier = Modifier.size(20.dp))
+                        }
+                    )
+                    
+                    OutlinedTextField(
+                        value = duration,
+                        onValueChange = { if (it.isEmpty() || it.matches(Regex("^\\d*$"))) duration = it },
+                        label = { Text("Duration") },
+                        placeholder = { Text("0") },
+                        suffix = { Text("min") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        leadingIcon = {
+                            Icon(Icons.Default.Timer, contentDescription = null, modifier = Modifier.size(20.dp))
+                        }
+                    )
+                }
                 
-                OutlinedTextField(
-                    value = calories,
-                    onValueChange = { calories = it },
-                    label = { Text("Calories") },
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-                
-                OutlinedTextField(
-                    value = steps,
-                    onValueChange = { steps = it },
-                    label = { Text("Steps (optional)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-                
-                OutlinedTextField(
-                    value = duration,
-                    onValueChange = { duration = it },
-                    label = { Text("Duration (minutes)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedTextField(
+                        value = calories,
+                        onValueChange = { if (it.isEmpty() || it.matches(Regex("^\\d*$"))) calories = it },
+                        label = { Text("Calories") },
+                        placeholder = { Text("0") },
+                        suffix = { Text("kcal") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        leadingIcon = {
+                            Icon(Icons.Default.LocalFireDepartment, contentDescription = null, modifier = Modifier.size(20.dp))
+                        }
+                    )
+                    
+                    OutlinedTextField(
+                        value = steps,
+                        onValueChange = { if (it.isEmpty() || it.matches(Regex("^\\d*$"))) steps = it },
+                        label = { Text("Steps") },
+                        placeholder = { Text("0") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        leadingIcon = {
+                            Icon(Icons.Default.Footprint, contentDescription = null, modifier = Modifier.size(20.dp))
+                        }
+                    )
+                }
                 
                 OutlinedTextField(
                     value = location,
                     onValueChange = { location = it },
                     label = { Text("Location") },
+                    placeholder = { Text("Where did you go?") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(20.dp))
+                    }
                 )
                 
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
                     label = { Text("Notes (optional)") },
+                    placeholder = { Text("Add notes...") },
                     modifier = Modifier.fillMaxWidth(),
-                    maxLines = 3
+                    minLines = 2,
+                    maxLines = 3,
+                    leadingIcon = {
+                        Icon(Icons.Default.Notes, contentDescription = null, modifier = Modifier.size(20.dp))
+                    }
                 )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    val activity = Activity(
-                        type = selectedType,
-                        distance = distance.toDoubleOrNull() ?: 0.0,
-                        calories = calories.toIntOrNull() ?: 0,
-                        steps = steps.toIntOrNull() ?: 0,
-                        duration = duration.toLongOrNull() ?: 0,
-                        date = System.currentTimeMillis(),
-                        location = location,
-                        notes = notes
-                    )
-                    onAdd(activity)
-                },
-                enabled = distance.toDoubleOrNull() != null && 
-                         calories.toIntOrNull() != null && 
-                         duration.toLongOrNull() != null &&
-                         location.isNotBlank()
-            ) {
-                Text("Add")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                
+                // Buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Cancel")
+                    }
+                    
+                    Button(
+                        onClick = {
+                            val activity = Activity(
+                                type = selectedType,
+                                distance = distance.toDoubleOrNull() ?: 0.0,
+                                calories = calories.toIntOrNull() ?: 0,
+                                steps = steps.toIntOrNull() ?: 0,
+                                duration = duration.toLongOrNull() ?: 0,
+                                date = System.currentTimeMillis(),
+                                location = location,
+                                notes = notes
+                            )
+                            onAdd(activity)
+                        },
+                        enabled = distance.toDoubleOrNull() != null && 
+                                 distance.toDoubleOrNull()!! > 0 &&
+                                 calories.toIntOrNull() != null && 
+                                 duration.toLongOrNull() != null &&
+                                 location.isNotBlank(),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Add")
+                    }
+                }
             }
         }
-    )
+    }
 }
