@@ -24,7 +24,7 @@ class UpdateChecker(private val context: Context) {
     
     companion object {
         private const val GITHUB_API_URL = "https://api.github.com/repos/fizzexual/VeloTravel/releases/latest"
-        private const val CURRENT_VERSION = "2.0.6" // Fixed getIcon import
+        private const val CURRENT_VERSION = "2.1.0" // Added vibrant colors, animations, and dynamic UI
     }
     
     suspend fun checkForUpdates(): UpdateInfo? = withContext(Dispatchers.IO) {

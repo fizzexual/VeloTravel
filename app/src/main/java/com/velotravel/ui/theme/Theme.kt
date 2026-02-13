@@ -5,16 +5,56 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
+// Vibrant color palette
+private val Purple80 = Color(0xFFD0BCFF)
+private val PurpleGrey80 = Color(0xFFCCC2DC)
+private val Pink80 = Color(0xFFEFB8C8)
+private val Purple40 = Color(0xFF6650a4)
+private val PurpleGrey40 = Color(0xFF625b71)
+private val Pink40 = Color(0xFF7D5260)
+
+// Custom vibrant colors
+private val Teal = Color(0xFF00BCD4)
+private val Orange = Color(0xFFFF9800)
+private val Green = Color(0xFF4CAF50)
+private val Blue = Color(0xFF2196F3)
+private val Red = Color(0xFFE91E63)
+private val Yellow = Color(0xFFFFC107)
+
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF81C784),      // Спокоен зелен
-    secondary = Color(0xFF64B5F6),    // Светло синьо
-    tertiary = Color(0xFFFFB74D),     // Топъл оранжев
-    background = Color(0xFF121212),
-    surface = Color(0xFF1E1E1E),
-    onPrimary = Color.Black,
-    onSecondary = Color.Black,
-    onBackground = Color(0xFFE0E0E0),
-    onSurface = Color(0xFFE0E0E0)
+    primary = Purple80,
+    secondary = PurpleGrey80,
+    tertiary = Pink80,
+    background = Color(0xFF1C1B1F),
+    surface = Color(0xFF1C1B1F),
+    onPrimary = Color(0xFF381E72),
+    onSecondary = Color(0xFF332D41),
+    onTertiary = Color(0xFF492532),
+    onBackground = Color(0xFFE6E1E5),
+    onSurface = Color(0xFFE6E1E5),
+    primaryContainer = Color(0xFF4F378B),
+    secondaryContainer = Color(0xFF4A4458),
+    tertiaryContainer = Color(0xFF633B48),
+    surfaceVariant = Color(0xFF49454F),
+    onSurfaceVariant = Color(0xFFCAC4D0)
+)
+
+private val LightColorScheme = lightColorScheme(
+    primary = Purple40,
+    secondary = PurpleGrey40,
+    tertiary = Pink40,
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color(0xFF1C1B1F),
+    onSurface = Color(0xFF1C1B1F),
+    primaryContainer = Color(0xFFEADDFF),
+    secondaryContainer = Color(0xFFE8DEF8),
+    tertiaryContainer = Color(0xFFFFD8E4),
+    surfaceVariant = Color(0xFFE7E0EC),
+    onSurfaceVariant = Color(0xFF49454F)
 )
 
 @Composable
@@ -22,8 +62,10 @@ fun VeloTravelTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    
     MaterialTheme(
-        colorScheme = DarkColorScheme,
+        colorScheme = colorScheme,
         typography = Typography(),
         content = content
     )

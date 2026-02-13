@@ -1,6 +1,8 @@
 package com.velotravel.ui.home
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +15,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -22,6 +26,7 @@ import androidx.compose.ui.window.Dialog
 import com.velotravel.data.model.Activity
 import com.velotravel.data.model.ActivityType
 import com.velotravel.data.model.getIcon
+import com.velotravel.data.model.getColor
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -134,39 +139,67 @@ private fun StatCard(
     unit: String,
     modifier: Modifier = Modifier
 ) {
+    // Animated scale effect
+    var isVisible by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isVisible) 1f else 0.8f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+    
+    LaunchedEffect(Unit) {
+        isVisible = true
+    }
+    
     Card(
-        modifier = modifier,
+        modifier = modifier.scale(scale),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.secondaryContainer,
+                            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+                        )
+                    )
+                )
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.Center
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = value,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    text = title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = unit,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f),
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = value,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = unit,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
             }
         }
     }
@@ -176,12 +209,25 @@ private fun StatCard(
 private fun ActivityCard(activity: Activity) {
     val dateFormat = SimpleDateFormat("MMM dd, yyyy • HH:mm", Locale.getDefault())
     
+    // Animated appearance
+    var isVisible by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isVisible) 1f else 0.9f,
+        animationSpec = tween(durationMillis = 300)
+    )
+    
+    LaunchedEffect(Unit) {
+        isVisible = true
+    }
+    
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .scale(scale),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -192,13 +238,13 @@ private fun ActivityCard(activity: Activity) {
             Surface(
                 modifier = Modifier.size(48.dp),
                 shape = RoundedCornerShape(12.dp),
-                color = MaterialTheme.colorScheme.primaryContainer
+                color = activity.type.getColor().copy(alpha = 0.2f)
             ) {
                 Icon(
                     imageVector = activity.type.getIcon(),
                     contentDescription = activity.type.displayName,
                     modifier = Modifier.padding(12.dp),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    tint = activity.type.getColor()
                 )
             }
             
@@ -208,7 +254,8 @@ private fun ActivityCard(activity: Activity) {
                 Text(
                     text = activity.type.displayName,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    color = activity.type.getColor()
                 )
                 Text(
                     text = activity.location,
