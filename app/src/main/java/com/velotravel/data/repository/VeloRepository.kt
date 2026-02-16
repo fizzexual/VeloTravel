@@ -56,9 +56,6 @@ class VeloRepository(
         
         // Update progress
         updateProgress(routeId, kmRidden)
-        
-        // Check achievements
-        checkAndUnlockAchievements(routeId)
     }
     
     fun getEntriesForRoute(routeId: String): Flow<List<DailyEntry>> =
@@ -168,7 +165,7 @@ class VeloRepository(
         }
         
         // Daily achievements
-        val todayActivities = allActivities.filter { isToday(it.timestamp) }
+        val todayActivities = allActivities.filter { isToday(it.date) }
         val todayKm = todayActivities.sumOf { it.distance }
         val todaySteps = todayActivities.sumOf { it.steps }
         val todayCals = todayActivities.sumOf { it.calories }
@@ -178,7 +175,7 @@ class VeloRepository(
             todayKm >= 100.0 -> unlockAchievement("hundred_km_day")
             todayKm >= 50.0 -> {
                 unlockAchievement("fifty_km_day")
-                if (todayActivities.any { it.type == ActivityType.Running }) {
+                if (todayActivities.any { it.type == ActivityType.RUNNING }) {
                     unlockAchievement("ultra_runner")
                 }
             }
@@ -207,10 +204,10 @@ class VeloRepository(
         }
         
         // Activity type achievements
-        val walkCount = allActivities.count { it.type == ActivityType.Walking }
-        val runCount = allActivities.count { it.type == ActivityType.Running }
-        val cycleCount = allActivities.count { it.type == ActivityType.Cycling }
-        val hikeCount = allActivities.count { it.type == ActivityType.Hiking }
+        val walkCount = allActivities.count { it.type == ActivityType.WALKING }
+        val runCount = allActivities.count { it.type == ActivityType.RUNNING }
+        val cycleCount = allActivities.count { it.type == ActivityType.CYCLING }
+        val hikeCount = allActivities.count { it.type == ActivityType.HIKING }
         
         if (walkCount >= 1) unlockAchievement("first_walk")
         if (runCount >= 1) unlockAchievement("first_run")
@@ -273,7 +270,7 @@ class VeloRepository(
     private fun calculateActivityStreak(activities: List<Activity>): Int {
         if (activities.isEmpty()) return 0
         
-        val sortedDates = activities.map { it.timestamp / (1000 * 60 * 60 * 24) }.distinct().sorted().reversed()
+        val sortedDates = activities.map { it.date / (1000 * 60 * 60 * 24) }.distinct().sorted().reversed()
         var streak = 1
         var maxStreak = 1
         
@@ -291,7 +288,7 @@ class VeloRepository(
     
     private suspend fun checkWeeklyAchievements(activities: List<Activity>) {
         val weekAgo = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000
-        val weekActivities = activities.filter { it.timestamp >= weekAgo }
+        val weekActivities = activities.filter { it.date >= weekAgo }
         
         val weekKm = weekActivities.sumOf { it.distance }
         val weekSteps = weekActivities.sumOf { it.steps }
@@ -310,14 +307,14 @@ class VeloRepository(
         
         // Active every day this week
         val daysWithActivity = weekActivities.map { 
-            it.timestamp / (1000 * 60 * 60 * 24) 
+            it.date / (1000 * 60 * 60 * 24) 
         }.distinct().size
         if (daysWithActivity >= 7) unlockAchievement("active_week")
     }
     
     private suspend fun checkMonthlyAchievements(activities: List<Activity>) {
         val monthAgo = System.currentTimeMillis() - 30 * 24 * 60 * 60 * 1000
-        val monthActivities = activities.filter { it.timestamp >= monthAgo }
+        val monthActivities = activities.filter { it.date >= monthAgo }
         
         val monthKm = monthActivities.sumOf { it.distance }
         val monthSteps = monthActivities.sumOf { it.steps }
@@ -334,7 +331,7 @@ class VeloRepository(
         
         // Perfect month - activity every day
         val daysWithActivity = monthActivities.map { 
-            it.timestamp / (1000 * 60 * 60 * 24) 
+            it.date / (1000 * 60 * 60 * 24) 
         }.distinct().size
         if (daysWithActivity >= 30) unlockAchievement("perfect_month")
         
@@ -357,7 +354,7 @@ class VeloRepository(
         var nightCount = 0
         
         activities.forEach { activity ->
-            calendar.timeInMillis = activity.timestamp
+            calendar.timeInMillis = activity.date
             val hour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
             if (hour < 7) earlyCount++
             if (hour >= 22) nightCount++
@@ -386,7 +383,7 @@ class VeloRepository(
         val weeks = mutableSetOf<Int>()
         
         activities.forEach { activity ->
-            calendar.timeInMillis = activity.timestamp
+            calendar.timeInMillis = activity.date
             weeks.add(calendar.get(java.util.Calendar.WEEK_OF_YEAR))
         }
         
@@ -398,7 +395,7 @@ class VeloRepository(
         val weekends = mutableSetOf<Int>()
         
         activities.forEach { activity ->
-            calendar.timeInMillis = activity.timestamp
+            calendar.timeInMillis = activity.date
             val dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
             if (dayOfWeek == java.util.Calendar.SATURDAY || dayOfWeek == java.util.Calendar.SUNDAY) {
                 weekends.add(calendar.get(java.util.Calendar.WEEK_OF_YEAR))
@@ -410,14 +407,14 @@ class VeloRepository(
     
     private fun hasWeekendRides(activities: List<Activity>): Boolean {
         val recentActivities = activities.filter { 
-            System.currentTimeMillis() - it.timestamp < 7 * 24 * 60 * 60 * 1000 
+            System.currentTimeMillis() - it.date < 7 * 24 * 60 * 60 * 1000 
         }
         val calendar = java.util.Calendar.getInstance()
         var hasSaturday = false
         var hasSunday = false
         
         recentActivities.forEach { activity ->
-            calendar.timeInMillis = activity.timestamp
+            calendar.timeInMillis = activity.date
             when (calendar.get(java.util.Calendar.DAY_OF_WEEK)) {
                 java.util.Calendar.SATURDAY -> hasSaturday = true
                 java.util.Calendar.SUNDAY -> hasSunday = true
@@ -427,11 +424,11 @@ class VeloRepository(
     }
     
     private fun hasIronLegsStreak(activities: List<Activity>): Boolean {
-        val sortedActivities = activities.sortedByDescending { it.timestamp }
+        val sortedActivities = activities.sortedByDescending { it.date }
         val dailyKm = mutableMapOf<Long, Double>()
         
         sortedActivities.forEach { activity ->
-            val day = activity.timestamp / (1000 * 60 * 60 * 24)
+            val day = activity.date / (1000 * 60 * 60 * 24)
             dailyKm[day] = (dailyKm[day] ?: 0.0) + activity.distance
         }
         
